@@ -19,3 +19,5 @@ There will be `middleware.py` and many folders. `middleware.py` should provide i
 ### Virtual envs
 There is `requirements.txt` provided by `pip freeze` for each from examples.
 
+## Implemented examples
+- *Window* - or simple Frame / QWidget from https://dm4rnde.com/py-gui-soluts-tkinter-comp-to-pyqt5 
