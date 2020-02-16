@@ -1,10 +1,10 @@
-import tkinter as tk
+import middleware as tk
 
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.pack()
+        #self.pack() # TODO 
         self.create_widgets()
 
     def create_widgets(self):
@@ -15,7 +15,7 @@ class Application(tk.Frame):
 
         self.quit = tk.Button(self, text="QUIT", fg="red",
                               command=self.master.destroy)
-        self.quit.pack(side="bottom")
+        self.quit.move(100,0) # TODO return pack(side="bottom") # TODO implement
 
     def say_hi(self):
         print("hi there, everyone!")

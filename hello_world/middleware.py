@@ -1,7 +1,36 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QApplication, QWidget, QWidget, QPushButton
+from PyQt5.QtCore import pyqtSlot
+
+class Packable(): # TODO
+
+    def pack(self, side=None): # TODO - side and also more params
+        pass
+
+class Subscriptable(): # TODO
+
+    def __setitem__(self, key, data):
+        # TODO - Should throw some exceptions
+        if key == 'text': # TODO 8 milion lines problem...
+            self.setText(data)
+        return setattr(self, key, data)
+
+    def __getitem__(self, key):
+        return getattr(self, key) # TODO - Should throw some exceptions
+
+
+class Button(QPushButton, Packable, Subscriptable):
+    def __init__(self, master, text=None, fg=None, command=None): # TODO That params
+        super(Button, self).__init__(text, master) # TODO fg, command
+        self.command = command
+        self.clicked.connect(self.on_click)
+        self.show()
+
+    @pyqtSlot()
+    def on_click(self):
+        self.command()
+
 
 class Frame(QWidget):
     def __init__(self, master):
@@ -56,4 +85,6 @@ class Tk(QApplication):
 
         sys.exit(self.exec_())
 
+    def destroy(self): # What about not window stuff?
+        self.quit()
 
