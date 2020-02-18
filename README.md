@@ -22,4 +22,6 @@ There is `requirements.txt` provided by `pip freeze` for each from examples.
 ## Implemented examples
 - *Window* - or simple Frame / QWidget from: https://dm4rnde.com/py-gui-soluts-tkinter-comp-to-pyqt5 
 
-- *Hello world9 - Simple program with buttons and callbacks from Tkinter docs: https://docs.python.org/3/library/tkinter.html  
+- *Hello world* - Simple program with buttons and callbacks from Tkinter docs: https://docs.python.org/3/library/tkinter.html
+
+- *Packing* - Experimenting with pack-ing manager from Tkinter docs: https://docs.python.org/3/library/tkinter.html
