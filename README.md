@@ -24,4 +24,6 @@ There is `requirements.txt` provided by `pip freeze` for each from examples.
 
 - *Hello world* - Simple program with buttons and callbacks from Tkinter docs: https://docs.python.org/3/library/tkinter.html
 
-- *Packing* - Experimenting with pack-ing manager from Tkinter docs: https://docs.python.org/3/library/tkinter.html
+- *Packing* - Experimenting with pack-ing manager from Tkinter docs: https://docs.python.org/3/library/tkinter.html and VBox/HBox from https://dm4rnde.com/py-gui-soluts-tkinter-comp-to-pyqt5
+
+- *Entry* - PoC Entry from: https://dm4rnde.com/py-gui-soluts-tkinter-comp-to-pyqt5
