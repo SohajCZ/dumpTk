@@ -1,6 +1,6 @@
-import tkinter as tk
-from tkinter import LEFT, RAISED, BOTH,YES
-from tkinter.ttk import Frame
+import middleware as tk
+from middleware import LEFT, RAISED, BOTH,YES
+from middleware import Frame # TODO: This kinda bad - refusing ttk.
 
 class WindowWithDifferentLayouts(tk.Frame):
     def __init__(self, master=None):
