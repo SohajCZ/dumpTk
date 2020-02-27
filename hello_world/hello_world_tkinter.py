@@ -1,4 +1,4 @@
-import tkinter as tk
+import middleware as tk
 
 class Application(tk.Frame):
     def __init__(self, master=None):
