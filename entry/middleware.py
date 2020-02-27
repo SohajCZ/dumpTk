@@ -1,7 +1,8 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, \
-                            QHBoxLayout, QVBoxLayout, QGridLayout
+                            QHBoxLayout, QVBoxLayout, QGridLayout, \
+                            QLineEdit
 from PyQt5.QtCore import pyqtSlot
 
 TOP=1
@@ -11,6 +12,18 @@ LEFT=4
 RAISED="Whatever"
 BOTH="Whatever"
 YES="Whatever"
+
+
+class StringVar(): # Wth
+
+    def __init__(self):
+        self.text = ""
+
+    def set(self, text):
+        self.text = text
+
+    def __str__(self):
+        return self.text
 
 
 class PackageManager():
@@ -64,6 +77,13 @@ class Subscriptable(): # TODO
 
     def __getitem__(self, key):
         return getattr(self, key) # TODO - Should throw some exceptions
+
+
+class Entry(QLineEdit, Packable):
+
+    def __init__(self, master, textvariable=None):
+        self.master = master
+        super(QLineEdit, self).__init__(str(textvariable), master)
 
 
 class Button(QPushButton, Packable, Subscriptable):
