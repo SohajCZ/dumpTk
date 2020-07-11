@@ -1,4 +1,4 @@
-import middleware as tk
+import myTkinter as tk
 
 class WindowWithEntryField(tk.Frame):
     def __init__(self, master=None):
