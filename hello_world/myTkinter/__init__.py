@@ -39,6 +39,8 @@ TclError = _tkinter.TclError
 from tkinter.constants import *
 import re
 
+from implementer import Implementer
+
 wantobjects = 1
 
 TkVersion = float(_tkinter.TK_VERSION)
@@ -2238,38 +2240,46 @@ class Wm:
 class TkWrapper:
 
     def __init__(self, screenName, baseName, className, interactive, wantobjects, useTk, sync, use):
-        self.tk = _tkinter.create(screenName, baseName, className, interactive, wantobjects, useTk, sync, use)
+        #self.tk = _tkinter.create(screenName, baseName, className, interactive, wantobjects, useTk, sync, use) - TODO: This is previous, use others
 
+        self.tk = Implementer(screenName)
+   
     def call(self, *args): # TODO: Wildcard
-        print(*args) 
+        # print(*args) 
         return self.tk.call(*args)
 
     def createcommand(self, cbname, bound_method):
         # print(cbname, bound_method)
-        return self.tk.createcommand(cbname, bound_method)
+        # return self.tk.createcommand(cbname, bound_method)
+        pass # TODO
 
     def getboolean(self, variable): # TODO 
         # print(variable)
-        return self.tk.getboolean(variable) # TODO: This might need some hack or research
+        # return self.tk.getboolean(variable) # TODO: This might need some hack or research
+        pass # TODO
 
     def globalsetvar(self, *args): # TODO # TODO: Wildcard
         # print(*args) 
-        return self.tk.globalsetvar(*args)
+        # return self.tk.globalsetvar(*args)
+        pass # TODO
 
     def globalunsetvar(self, *args): # TODO # TODO: Wildcard
         # print(*args) 
-        return self.tk.globalunsetvar(*args)
+        # return self.tk.globalunsetvar(*args)
+        pass # TODO
 
     def getvar(self, variable):
         # print(variable)
-        return self.tk.getvar(variable) # TODO: This might need some hack or research
+        # return self.tk.getvar(variable) # TODO: This might need some hack or research
+        return 8.6 # TODO
 
     def mainloop(self, *args): # Not really interesting.
         return self.tk.mainloop(*args)
 
     def deletecommand(self, cbname):
         # print(cbname)
-        return self.tk.deletecommand(cbname)
+        # return self.tk.deletecommand(cbname)
+        pass # TODO
         
 
 class Tk(Misc, Wm):
@@ -2316,14 +2326,16 @@ class Tk(Misc, Wm):
         global _default_root
         # Version sanity checks
         tk_version = self.tk.getvar('tk_version')
-        if tk_version != _tkinter.TK_VERSION:
-            raise RuntimeError("tk.h version (%s) doesn't match libtk.a version (%s)"
-                               % (_tkinter.TK_VERSION, tk_version))
+        # TODO: Jokes on you.
+        #if tk_version != _tkinter.TK_VERSION:
+        #    raise RuntimeError("tk.h version (%s) doesn't match libtk.a version (%s)"
+        #                       % (_tkinter.TK_VERSION, tk_version))
         # Under unknown circumstances, tcl_version gets coerced to float
-        tcl_version = str(self.tk.getvar('tcl_version'))
-        if tcl_version != _tkinter.TCL_VERSION:
-            raise RuntimeError("tcl.h version (%s) doesn't match libtcl.a version (%s)" \
-                               % (_tkinter.TCL_VERSION, tcl_version))
+        # TODO: Jokes on you.
+        #tcl_version = str(self.tk.getvar('tcl_version'))
+        #if tcl_version != _tkinter.TCL_VERSION:
+        #    raise RuntimeError("tcl.h version (%s) doesn't match libtcl.a version (%s)" \
+        #                       % (_tkinter.TCL_VERSION, tcl_version))
         # Create and register the tkerror and exit commands
         # We need to inline parts of _register here, _ register
         # would register differently-named commands.
