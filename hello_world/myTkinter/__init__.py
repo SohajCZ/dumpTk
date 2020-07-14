@@ -623,11 +623,12 @@ class Misc:
     # XXX font command?
     _tclCommands = None
 
-    def destroy(self):
+    def destroy(self, something=None):
         """Internal function.
 
         Delete all Tcl commands created for
         this widget in the Tcl interpreter."""
+        print("Destroy in Misc, ", something)
         if self._tclCommands is not None:
             for name in self._tclCommands:
                 #print '- Tkinter: deleted command', name
@@ -2250,7 +2251,7 @@ class TkWrapper:
 
     def createcommand(self, cbname, bound_method):
         # print(cbname, bound_method)
-        # return self.tk.createcommand(cbname, bound_method)
+        return self.tk.createcommand(cbname, bound_method)
         pass # TODO
 
     def getboolean(self, variable): # TODO 
@@ -2349,9 +2350,10 @@ class Tk(Misc, Wm):
             _default_root = self
         self.protocol("WM_DELETE_WINDOW", self.destroy)
 
-    def destroy(self):
+    def destroy(self, something=None):
         """Destroy this and all descendants widgets. This will
         end the application of this Tcl interpreter."""
+        print("Destroy in Tk, ", something)
         for c in list(self.children.values()): c.destroy()
         self.tk.call('destroy', self._w)
         Misc.destroy(self)
@@ -4029,7 +4031,8 @@ class OptionMenu(Menubutton):
             return self.__menu
         return Widget.__getitem__(self, name)
 
-    def destroy(self):
+    def destroy(self, something=None):
+        print("Destroy in Menu, ", something)
         """Destroy this widget and the associated menu."""
         Menubutton.destroy(self)
         self.__menu = None

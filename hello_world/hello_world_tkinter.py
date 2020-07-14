@@ -17,7 +17,8 @@ class Application(tk.Frame):
                               command=self.master.destroy)
         self.quit.pack(side="bottom")
 
-    def say_hi(self):
+    def say_hi(self, something=None):
+        print("Say hi problem, ", something)
         print("hi there, everyone!")
 
 root = tk.Tk()

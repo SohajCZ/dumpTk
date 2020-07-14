@@ -2,9 +2,23 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton
 from PyQt5.QtCore import QCoreApplication
 
-# This could mean quite work and also for each of QT classes...
+def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
+      if event == "call":
+          indent[0] += 2
+          print("-" * indent[0] + "> call function", frame.f_code.co_name)
+      elif event == "return":
+          print("<" + "-" * indent[0], "exit function", frame.f_code.co_name)
+          indent[0] -= 2
+      return tracefunc
+
+import sys
+sys.setprofile(tracefunc)                    # TODO: Remove ^
+
+# This could mean quite work and also might need 1 for each of QT classes...
 translate_variables = {
-    '-textvariable': 'contents'
+    '-text': 'setText',
+    '-command': 'clicked.connect'
+    #'-fg': pass # TODO: # Might need tuples for style
 }
 
 translate_class = {
@@ -13,44 +27,74 @@ translate_class = {
     #'entry': QLineEdit'
 }
 
-# Reserved words - just omit thos I think I dont need.
-reserved_words = ['wm']
-
-
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
+        self.window = None
+        self.namer = dict()
+        self.commands = dict()
 
-    def translate(self, contruct_command):
-        pass
+    def call_method(self, o, name, params):
+        if 'clicked.' in name: # TODO: IDK what else, but . should really nat be in name ...
+            return o.clicked.connect(self.commands[params])
+        return getattr(o, name)(params)
+
+    def createcommand(self, cbname, bound_method):
+        #print("Assign command: ", cbname, bound_method)
+
+        self.commands[cbname] = bound_method
 
     def call(self, *args):
-        contruct_command = args
+        construct_command = args
 
-        #print("Command", contruct_command)
+        #print("--------------------------")
+        #print("Construct command", construct_command)
 
-        if contruct_command[0] == 'wm': # TODO Wildcard
+        if construct_command[0] == 'destroy': # TODO Nasty hack, memory leaks I think
+            self.quit()
             return
 
-        if contruct_command[0][0] in ['pack']: # TODO Wildcard
+        if construct_command[0] == 'wm': # TODO 'WM_DELETE_WINDOW'
             return
 
-        if contruct_command[0][1] in ['configure']: # TODO Wildcard
+        if construct_command[0][0] in ['pack']: # TODO Needs to setup packing manager
             return
+        # TODO: ALso Grid & place exists.
 
-        if contruct_command[0][0] not in reserved_words:
-            print(contruct_command[0])
-            class_name = translate_class[contruct_command[0][0]]
+	# Parse other aditional options
+        aditional_options = dict()
+
+        if len(construct_command[0])>2:
+            for i in range(2, len(construct_command[0]), 2):
+                if construct_command[0][i] != '-fg': # TODO: styling
+                        aditional_options[construct_command[0][i]] = construct_command[0][i+1]
+
+        if construct_command[0][1] in ['configure']: # TODO Configuration of existing - via namer 
+            widget = self.namer[construct_command[0][0]]
+            for key in aditional_options.keys():
+               self.call_method(widget, translate_variables[key], aditional_options[key])
+
+            return # TODO Make it nicer
             
-            if class_name == QWidget:
-                widget = class_name()
-                widget.resize(200,200)
-                widget.move(50,50)
-                self.window = widget
+        print(construct_command[0])
+        class_name = translate_class[construct_command[0][0]]
 
-            if class_name == QPushButton and len(contruct_command[0])>3 and contruct_command[0][2] == '-text':
-                widget = class_name(contruct_command[0][3], self.window)
+        if class_name == QWidget:
+            widget = class_name() # TODO Different constructors - Widget, Button ...
+            widget.resize(200,200) # TODO Hardcoded
+            widget.move(50,50) # TODO Hardcoded
+            self.window = widget
+            self.namer[construct_command[0][1]] = widget
 
+        if class_name == QPushButton:
+            widget = class_name(aditional_options.get('-text', "N/A"), self.window)
+                
+            for key in aditional_options.keys():
+               self.call_method(widget, translate_variables[key], aditional_options[key])
+
+            self.namer[construct_command[0][1]] = widget
+                
+        return 
 
 
 
