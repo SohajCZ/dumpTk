@@ -74,36 +74,22 @@ class Implementer(QApplication):
     def _add_widget(self, widget, side=TOP): # TODO: Other args
         print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
-        if True: # TODO: Clean
-            if side == LEFT:
-                if self.state != side: 
-                    self.content = QHBoxLayout()
-                    self.state = LEFT
-                    self.layout.addLayout(self.content)
-                self.content.addWidget(widget)
-            elif side == TOP:
-                if self.state != side: 
-                    self.content = QVBoxLayout()
-                    self.state = TOP
-                    self.layout.addLayout(self.content)
-                self.content.addWidget(widget)
-            elif side == RIGHT:
-                if self.state != side:
-                    self.content = QHBoxLayout()
+        if side in [LEFT, RIGHT]:
+            if self.state != side: 
+                self.content = QHBoxLayout()
+                if side == RIGHT:
                     self.content.setDirection(QBoxLayout.RightToLeft)
-                    self.layout.addLayout(self.content)
-                    self.state = RIGHT
-
-                self.content.addWidget(widget)
-            elif side == BOTTOM:
-                if self.state != side:
-                    self.content = QVBoxLayout()
+                self.layout.addLayout(self.content)
+            self.content.addWidget(widget)
+        elif side in [TOP, BOTTOM]:
+            if self.state != side: 
+                self.content = QVBoxLayout()
+                if side == BOTTOM:
                     self.content.setDirection(QBoxLayout.BottomToTop)
-                    self.layout.addLayout(self.content)
-                    self.state = BOTTOM
+                self.layout.addLayout(self.content)
+            self.content.addWidget(widget)
 
-                self.content.addWidget(widget)
-
+        self.state = side
         print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
     def call(self, *args):
