@@ -1,6 +1,15 @@
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, \
+                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
 from PyQt5.QtCore import QCoreApplication
+
+TOP="top"
+RIGHT="right"
+BOTTOM="bottom"
+LEFT="left"
+RAISED="Whatever"
+BOTH="Whatever"
+YES="Whatever"
 
 def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
       if event == "call":
@@ -37,12 +46,20 @@ translate_class = {
     #'entry': QLineEdit'
 }
 
+
+
+
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
         self.window = None
         self.namer = dict()
         self.commands = dict()
+        self.content = QHBoxLayout()
+        self.layout = self.content
+        self.state = LEFT # Default
+        print("Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+        #self.setLayout(self.package_manager) # TODO Remove/change after packing manager)
 
     def call_method(self, o, name, params):
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
@@ -53,6 +70,41 @@ class Implementer(QApplication):
         #print("Assign command: ", cbname, bound_method)
 
         self.commands[cbname] = bound_method
+
+    def _add_widget(self, widget, side=TOP): # TODO: Other args
+        print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+
+        if True: # TODO: Clean
+            if side == LEFT:
+                if self.state != side: 
+                    self.content = QHBoxLayout()
+                    self.state = LEFT
+                    self.layout.addLayout(self.content)
+                self.content.addWidget(widget)
+            elif side == TOP:
+                if self.state != side: 
+                    self.content = QVBoxLayout()
+                    self.state = TOP
+                    self.layout.addLayout(self.content)
+                self.content.addWidget(widget)
+            elif side == RIGHT:
+                if self.state != side:
+                    self.content = QHBoxLayout()
+                    self.content.setDirection(QBoxLayout.RightToLeft)
+                    self.layout.addLayout(self.content)
+                    self.state = RIGHT
+
+                self.content.addWidget(widget)
+            elif side == BOTTOM:
+                if self.state != side:
+                    self.content = QVBoxLayout()
+                    self.content.setDirection(QBoxLayout.BottomToTop)
+                    self.layout.addLayout(self.content)
+                    self.state = BOTTOM
+
+                self.content.addWidget(widget)
+
+        print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
     def call(self, *args):
         construct_command = args
@@ -67,17 +119,23 @@ class Implementer(QApplication):
         if construct_command[0] == 'wm': # TODO 'WM_DELETE_WINDOW'
             return
 
-        if construct_command[0][0] in ['pack']: # TODO Needs to setup packing manager
-            print("Construct command", construct_command)
-            return
-        # TODO: Also Grid & place exists.
-
 	# Parse other aditional options
         aditional_options = dict()
 
         if len(construct_command[0])>2:
-            for i in range(2, len(construct_command[0]), 2):
+            for i in range(2+(construct_command[0][0] in ['pack']), len(construct_command[0]), 2):
                 aditional_options[construct_command[0][i]] = construct_command[0][i+1]
+            #print(aditional_options)
+
+        # If packing insert widget
+        if construct_command[0][0] in ['pack']: # TODO: Also Grid & place exists.
+            # print("Construct command", construct_command)
+            # TODO: Side hardcoded below
+            # print(self.namer[construct_command[0][2]], aditional_options)
+            #self.package_manager.insert_widget(self.namer[construct_command[0][2]], side=aditional_options.get("-side",TOP))
+            if self.namer[construct_command[0][2]] != self.window: # TODO: Hacking
+                self._add_widget(self.namer[construct_command[0][2]], side=aditional_options.get("-side",TOP))
+            return
 
         if construct_command[0][1] in ['configure']: # TODO Configuration of existing - via namer 
             widget = self.namer[construct_command[0][0]]
@@ -91,13 +149,14 @@ class Implementer(QApplication):
 
         if class_name == QWidget:
             widget = class_name() # TODO Different constructors - Widget, Button ...
-            widget.resize(200,200) # TODO Hardcoded
+            widget.resize(0,0) # TODO Hardcoded
             widget.move(50,50) # TODO Hardcoded
-            self.window = widget
+            self.window = widget # TODO: Only first one
+            self.window.setLayout(self.layout) # TODO: Hardcoded
             self.namer[construct_command[0][1]] = widget
 
         if class_name == QPushButton:
-            widget = class_name(aditional_options.get('-text', "N/A"), self.window)
+            widget = class_name(aditional_options.get('-text', "N/A"), self.window) # TODO This could not be the right "master".
                 
             for key in aditional_options.keys():
                self.call_method(widget, translate_variables[key], aditional_options[key])
