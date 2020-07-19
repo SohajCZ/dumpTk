@@ -5,9 +5,9 @@ from PyQt5.QtCore import QCoreApplication
 def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
       if event == "call":
           indent[0] += 2
-          print("-" * indent[0] + "> call function", frame.f_code.co_name)
+          #print("-" * indent[0] + "> call function", frame.f_code.co_name)
       elif event == "return":
-          print("<" + "-" * indent[0], "exit function", frame.f_code.co_name)
+          #print("<" + "-" * indent[0], "exit function", frame.f_code.co_name)
           indent[0] -= 2
       return tracefunc
 
@@ -17,9 +17,19 @@ sys.setprofile(tracefunc)                    # TODO: Remove ^
 # This could mean quite work and also might need 1 for each of QT classes...
 translate_variables = {
     '-text': 'setText',
-    '-command': 'clicked.connect'
-    #'-fg': pass # TODO: # Might need tuples for style
+    '-command': 'clicked.connect',
+    '-fg': 'setStyleSheet',
 }
+
+# For translating styling
+translate_params = {
+    'red': 'color: red;', # TODO: This could be improved to not have line for every needed color :) , also stating that red means foreground-color (color in PyQt) is quite bad
+}
+
+# For translating styling
+def translate(param): 
+    #print(param, translate_params.get(param, param))
+    return translate_params.get(param, param) # Getter or ommiter
 
 translate_class = {
     'frame': QWidget,
@@ -35,9 +45,9 @@ class Implementer(QApplication):
         self.commands = dict()
 
     def call_method(self, o, name, params):
-        if 'clicked.' in name: # TODO: IDK what else, but . should really nat be in name ...
-            return o.clicked.connect(self.commands[params])
-        return getattr(o, name)(params)
+        if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
+            return o.clicked.connect(self.commands.get(params))
+        return getattr(o, name)(translate(params))
 
     def createcommand(self, cbname, bound_method):
         #print("Assign command: ", cbname, bound_method)
@@ -58,6 +68,7 @@ class Implementer(QApplication):
             return
 
         if construct_command[0][0] in ['pack']: # TODO Needs to setup packing manager
+            print("Construct command", construct_command)
             return
         # TODO: Also Grid & place exists.
 
@@ -66,8 +77,7 @@ class Implementer(QApplication):
 
         if len(construct_command[0])>2:
             for i in range(2, len(construct_command[0]), 2):
-                if construct_command[0][i] != '-fg': # TODO: styling
-                        aditional_options[construct_command[0][i]] = construct_command[0][i+1]
+                aditional_options[construct_command[0][i]] = construct_command[0][i+1]
 
         if construct_command[0][1] in ['configure']: # TODO Configuration of existing - via namer 
             widget = self.namer[construct_command[0][0]]
@@ -76,7 +86,7 @@ class Implementer(QApplication):
 
             return # TODO Make it nicer
             
-        print(construct_command[0])
+        #print(construct_command[0])
         class_name = translate_class[construct_command[0][0]]
 
         if class_name == QWidget:
