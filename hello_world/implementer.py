@@ -47,8 +47,6 @@ translate_class = {
 }
 
 
-
-
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
@@ -58,8 +56,7 @@ class Implementer(QApplication):
         self.content = QHBoxLayout()
         self.layout = self.content
         self.state = LEFT # Default
-        print("Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
-        #self.setLayout(self.package_manager) # TODO Remove/change after packing manager)
+        #print("Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
     def call_method(self, o, name, params):
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
@@ -71,28 +68,28 @@ class Implementer(QApplication):
 
         self.commands[cbname] = bound_method
 
-    def _add_widget(self, widget, side=TOP): # TODO: Other args
-        print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+    def _add_widget(self, widget, side=TOP, *args): # TODO: Other args
+        #print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
         if side in [LEFT, RIGHT]:
-            if self.state != side: 
+            if self.state not in [LEFT, RIGHT]: 
                 self.content = QHBoxLayout()
-                if side == RIGHT:
-                    self.content.setDirection(QBoxLayout.RightToLeft)
                 self.layout.addLayout(self.content)
+                if side == RIGHT: # According to TK testing - once it is set up, it remains.
+                    self.content.setDirection(QBoxLayout.RightToLeft)
             self.content.addWidget(widget)
         elif side in [TOP, BOTTOM]:
-            if self.state != side: 
+            if self.state not in [TOP, BOTTOM]: 
                 self.content = QVBoxLayout()
-                if side == BOTTOM:
-                    self.content.setDirection(QBoxLayout.BottomToTop)
                 self.layout.addLayout(self.content)
+                if side == BOTTOM: # According to TK testing - once it is set up, it remains.
+                    self.content.setDirection(QBoxLayout.BottomToTop)
             self.content.addWidget(widget)
 
         self.state = side
-        print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+        #print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
 
-    def call(self, *args):
+    def call(self, *args): # TODO: Args
         construct_command = args
 
         #print("--------------------------")
@@ -123,7 +120,7 @@ class Implementer(QApplication):
                 self._add_widget(self.namer[construct_command[0][2]], side=aditional_options.get("-side",TOP))
             return
 
-        if construct_command[0][1] in ['configure']: # TODO Configuration of existing - via namer 
+        if construct_command[0][1] in ['configure']:
             widget = self.namer[construct_command[0][0]]
             for key in aditional_options.keys():
                self.call_method(widget, translate_variables[key], aditional_options[key])
