@@ -59,7 +59,7 @@ class Implementer(QApplication):
 
         if construct_command[0][0] in ['pack']: # TODO Needs to setup packing manager
             return
-        # TODO: ALso Grid & place exists.
+        # TODO: Also Grid & place exists.
 
 	# Parse other aditional options
         aditional_options = dict()
