@@ -1,4 +1,4 @@
-import myTkinter as tk
+import qtinter as tk
 
 class Application(tk.Frame):
     def __init__(self, master=None):
