@@ -70,7 +70,7 @@ class Implementer(QApplication):
 
     # TODO: Since not supporting multiple Frames / Widgets, for instance packing-tkinter example, it is not working everytime. 
     def _add_widget(self, widget, side=TOP, *args): # TODO: Other args
-        print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+        #print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
         if self.state is None: # First time
              if side in [TOP, BOTTOM]:
                  self.content = QVBoxLayout()
@@ -83,7 +83,7 @@ class Implementer(QApplication):
              self.layout = self.content
              self.window.setLayout(self.content)
              self.state = side
-             print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+             #print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
              return
 
         if side in [TOP, BOTTOM]:
@@ -104,7 +104,7 @@ class Implementer(QApplication):
             self.content.addWidget(widget)
 
         self.state = side
-        print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+        #print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
         return
 
     def call(self, *args): # TODO: Args
@@ -131,7 +131,7 @@ class Implementer(QApplication):
         # If packing insert widget
         if construct_command[0][0] in ['pack']: # TODO: Also Grid & place exists.
             #print("Construct command", construct_command)
-            print(self.namer[construct_command[0][2]], aditional_options)
+            #print(self.namer[construct_command[0][2]], aditional_options)
             self._add_widget(self.namer[construct_command[0][2]], side=aditional_options.get("-side",TOP))
             return
 
