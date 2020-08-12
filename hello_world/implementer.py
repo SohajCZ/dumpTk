@@ -36,8 +36,7 @@ translate_params = {
 }
 
 # For translating styling
-def translate(param): 
-    #print(param, translate_params.get(param, param))
+def translate(param):
     return translate_params.get(param, param) # Getter or ommiter
 
 translate_class = {
@@ -60,13 +59,16 @@ class Implementer(QApplication):
 
     def call_method(self, o, name, params):
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
-            return o.clicked.connect(self.commands.get(params))
+            func = self.commands.get(params)
+            return o.clicked.connect(func)
         return getattr(o, name)(translate(params))
 
-    def createcommand(self, cbname, bound_method):
-        #print("Assign command: ", cbname, bound_method)
-
-        self.commands[cbname] = bound_method
+    def createcommand(self, cbname, bound_method, reassign_name=None):
+        #print("Assign command: ", cbname, bound_method, reassign_name)
+        if reassign_name:
+            self.commands[reassign_name] = bound_method
+        else:
+            self.commands[cbname] = bound_method
 
     # TODO: Since not supporting multiple Frames / Widgets, for instance packing-tkinter example, it is not working everytime. 
     def _add_widget(self, widget, side=TOP, *args): # TODO: Other args
