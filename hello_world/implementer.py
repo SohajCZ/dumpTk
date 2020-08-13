@@ -75,13 +75,19 @@ translate_class = {
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
-        self.window = None
-        self.namer = dict()
+        self.namer = { '.': self }
         self.commands = dict()
         self.content = None
         self.layout = None
         self.state = None # Default
+        self.window = None
         #print("Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+
+    def show(self):
+        if not self.window:
+            self.window = QWidget() # TODO params
+
+        self.window.show()
 
     def call_method(self, o, name, params):
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
@@ -228,7 +234,7 @@ class Implementer(QApplication):
 
     def mainloop(self, *args):
         import sys
-        self.window.show()
+        self.show()
         sys.exit(self.exec_())
 
 
