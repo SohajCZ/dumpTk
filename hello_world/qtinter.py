@@ -1,8 +1,33 @@
  # TODO: This could be how much I want to support tkinter
-from tkinter import Frame, Button
+from tkinter import Frame, Button, LabelFrame, Label, Radiobutton
+from tkinter import StringVar as TkString # TODO: Want to handle this at my own
 from tkinter import Tk as BaseTk
 
 from implementer import Implementer
+
+
+TOP="top"
+RIGHT="right"
+BOTTOM="bottom"
+LEFT="left"
+RAISED="Whatever" #TODO
+BOTH="Whatever" #TODO
+YES="Whatever" #TODO
+RIDGE="Whatever" #TODO
+E="Whatever" #TODO
+W="Whatever" #TODO
+N="Whatever" #TODO
+S="Whatever" #TODO
+
+
+class StringVar(TkString):
+    def __init__(self, master=None, value=None, name=None):
+        super(StringVar, self).__init__(master, value, name)
+
+    def __str__(self):
+        return value
+
+
 
 # TODO : Just pasted from Tkinter.
 class QtCallWrapper:
@@ -21,6 +46,7 @@ class QtCallWrapper:
         #print(self.func)
 
         if type(*args) == bool: # TODO Wth is this ...
+            #print(*args, args, args[0])
             args={}
 
         try:

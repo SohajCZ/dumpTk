@@ -1,15 +1,21 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, \
-                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
+                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout , \
+                            QGroupBox
 from PyQt5.QtCore import QCoreApplication
 
 TOP="top"
 RIGHT="right"
 BOTTOM="bottom"
 LEFT="left"
-RAISED="Whatever"
-BOTH="Whatever"
-YES="Whatever"
+RAISED="Whatever" #TODO
+BOTH="Whatever" #TODO
+YES="Whatever" #TODO
+RIDGE="Whatever" #TODO
+E="Whatever" #TODO
+W="Whatever" #TODO
+N="Whatever" #TODO
+S="Whatever" #TODO
 
 def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
       if event == "call":
@@ -24,15 +30,34 @@ import sys
 sys.setprofile(tracefunc)                    # TODO: Remove ^
 
 # This could mean quite work and also might need 1 for each of QT classes...
-translate_variables = {
+# TODO Yep, Labeld Frame :(
+translate_variables_dict_all = {
     '-text': 'setText',
     '-command': 'clicked.connect',
     '-fg': 'setStyleSheet',
+    '-padx': 'setStyleSheet',
+    '-pady': 'setStyleSheet',
 }
 
-# For translating styling
+translate_variables_dict_grid_box = {
+    '-text': 'setTitle',
+    '-command': 'clicked.connect',
+    '-fg': 'setStyleSheet',
+    '-padx': 'setStyleSheet',
+    '-pady': 'setStyleSheet',
+    '-relief': 'setStyleSheet',
+}
+
+def translate_variables(class_name, key):
+    if class_name == QGroupBox: # TODO Switch? (pythonic)
+        return translate_variables_dict_grid_box[key]
+    else:
+        return translate_variables_dict_all[key]
+
+# For translating styling => # TODO Rework
 translate_params = {
     'red': 'color: red;', # TODO: This could be improved to not have line for every needed color :) , also stating that red means foreground-color (color in PyQt) is quite bad
+    5: 'padding:5px' # TODO THIS
 }
 
 # For translating styling
@@ -41,8 +66,9 @@ def translate(param):
 
 translate_class = {
     'frame': QWidget,
-    'button': QPushButton
-    #'entry': QLineEdit'
+    'button': QPushButton,
+    #'entry': QLineEdit',
+    'labelframe': QGroupBox,
 }
 
 
@@ -61,7 +87,11 @@ class Implementer(QApplication):
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
             func = self.commands.get(params)
             return o.clicked.connect(func)
-        return getattr(o, name)(translate(params))
+
+        try:
+            return getattr(o, name)(translate(params))
+        except KeyError:
+            pass
 
     def createcommand(self, cbname, bound_method, reassign_name=None):
         #print("Assign command: ", cbname, bound_method, reassign_name)
@@ -110,42 +140,54 @@ class Implementer(QApplication):
         return
 
     def call(self, *args): # TODO: Args
-        construct_command = args
+        construct_command = args[0]
+
+        if construct_command == 'info':
+            print(*args) # TODO This is stringvar ... already made with my StringVar.
+            return
 
         #print("--------------------------")
         #print("Construct command", construct_command)
 
-        if construct_command[0] == 'destroy': # TODO Nasty hack, memory leaks I think
+        if construct_command[0] == 'radiobutton':
+            return # TODO Implement radiobutton
+
+        if construct_command == 'destroy': # TODO Nasty hack, memory leaks I think
             self.quit()
             return
 
-        if construct_command[0] == 'wm': # TODO 'WM_DELETE_WINDOW'
+        if construct_command == 'wm': # TODO 'WM_DELETE_WINDOW'
             return
+
+        # TODO Omit place.
 
 	# Parse other aditional options
         aditional_options = dict()
 
-        if len(construct_command[0])>2:
-            for i in range(2+(construct_command[0][0] in ['pack']), len(construct_command[0]), 2):
-                aditional_options[construct_command[0][i]] = construct_command[0][i+1]
+        if len(construct_command)>2:
+            for i in range(2+(construct_command[0] in ['pack', 'grid']), len(construct_command), 2):
+                aditional_options[construct_command[i]] = construct_command[i+1]
             #print(aditional_options)
 
         # If packing insert widget
-        if construct_command[0][0] in ['pack']: # TODO: Also Grid & place exists.
+        if construct_command[0] in ['pack']: # TODO: Also Grid & place exists.
             #print("Construct command", construct_command)
-            #print(self.namer[construct_command[0][2]], aditional_options)
-            self._add_widget(self.namer[construct_command[0][2]], side=aditional_options.get("-side",TOP))
+            #print(self.namer[construct_command[2]], aditional_options)
+            self._add_widget(self.namer[construct_command[2]], side=aditional_options.get("-side",TOP))
             return
 
-        if construct_command[0][1] in ['configure']:
-            widget = self.namer[construct_command[0][0]]
+        if construct_command[0] in ['grid']: # TODO: Get together
+            return
+
+        if construct_command[1] in ['configure']:
+            widget = self.namer[construct_command[0]]
             for key in aditional_options.keys():
-               self.call_method(widget, translate_variables[key], aditional_options[key])
+               self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
 
             return # TODO Make it nicer
             
-        #print(construct_command[0])
-        class_name = translate_class[construct_command[0][0]]
+        #print(construct_command)
+        class_name = translate_class[construct_command[0]]
 
         if class_name == QWidget:
             if self.window is None:
@@ -154,19 +196,28 @@ class Implementer(QApplication):
                 widget.move(50,50) # TODO Hardcoded
                 self.window = widget # TODO: Only first one
             else:
-                widget = class_name(self.namer[construct_command[0][1][:construct_command[0][1].rfind('.!')]])
-            self.namer[construct_command[0][1]] = widget
+                widget = class_name(self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
+            self.namer[construct_command[1]] = widget
             return # TODO Make it nicer
 
         if class_name == QPushButton:
-            widget = class_name(aditional_options.get('-text', "N/A"), self.namer[construct_command[0][1][:construct_command[0][1].rfind('.!')]])
+            widget = class_name(aditional_options.get('-text', "N/A"), self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
                 
             for key in aditional_options.keys():
-               self.call_method(widget, translate_variables[key], aditional_options[key])
+               self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
 
-            self.namer[construct_command[0][1]] = widget
+            self.namer[construct_command[1]] = widget
+            return # TODO Make it nicer
+
+        # "Else"
+
+        widget = class_name()
                 
-        return 
+        for key in aditional_options.keys():
+            self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+
+        self.namer[construct_command[1]] = widget
+
 
 
 
