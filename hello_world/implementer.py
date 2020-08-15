@@ -227,7 +227,10 @@ class Implementer(QApplication):
 
         # "Else"
 
-        widget = class_name()
+        if construct_command[1][:construct_command[1].rfind('.!')] != '':
+            widget = class_name(self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
+        else:
+            widget = class_name()
                 
         for key in aditional_options.keys():
             self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
