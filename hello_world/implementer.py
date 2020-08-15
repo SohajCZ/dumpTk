@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, \
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout , \
                             QGroupBox
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
 TOP="top"
@@ -16,6 +17,7 @@ E="Whatever" #TODO
 W="Whatever" #TODO
 N="Whatever" #TODO
 S="Whatever" #TODO
+END="Whatever" #TODO
 
 def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
       if event == "call":
@@ -37,6 +39,8 @@ translate_variables_dict_all = {
     '-fg': 'setStyleSheet',
     '-padx': 'setStyleSheet',
     '-pady': 'setStyleSheet',
+    '-width': 'setMaxLength', # Entry
+    '-height': 'setPointSize', # Text
 }
 
 translate_variables_dict_grid_box = {
@@ -67,7 +71,9 @@ def translate(param):
 translate_class = {
     'frame': QWidget,
     'button': QPushButton,
-    #'entry': QLineEdit',
+    'label': QLabel,
+    'entry': QLineEdit,
+    'text': QFont,
     'labelframe': QGroupBox,
 }
 
@@ -94,7 +100,7 @@ class Implementer(QApplication):
             func = self.commands.get(params)
             return o.clicked.connect(func)
 
-        try:
+        try: # TODO: Remove this and support most of attributes
             return getattr(o, name)(translate(params))
         except KeyError:
             pass
@@ -149,7 +155,7 @@ class Implementer(QApplication):
         construct_command = args[0]
 
         if construct_command == 'info':
-            print(*args) # TODO This is stringvar ... already made with my StringVar.
+            #print(*args) # TODO This is stringvar ... already made with my StringVar.
             return
 
         #print("--------------------------")
@@ -166,6 +172,10 @@ class Implementer(QApplication):
             return
 
         # TODO Omit place.
+
+        if type(construct_command) == str: # TODO: Buddies ? => .!labelframe2.!entry
+            # TODO Why this is here ...???
+            return
 
 	# Parse other aditional options
         aditional_options = dict()

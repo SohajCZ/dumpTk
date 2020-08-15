@@ -1,5 +1,5 @@
  # TODO: This could be how much I want to support tkinter
-from tkinter import Frame, Button, LabelFrame, Label, Radiobutton
+from tkinter import Frame, Button, LabelFrame, Label, Entry, Radiobutton, Text
 from tkinter import StringVar as TkString # TODO: Want to handle this at my own
 from tkinter import Tk as BaseTk
 
@@ -18,6 +18,7 @@ E="Whatever" #TODO
 W="Whatever" #TODO
 N="Whatever" #TODO
 S="Whatever" #TODO
+END="Whatever" #TODO
 
 
 class StringVar(TkString):
