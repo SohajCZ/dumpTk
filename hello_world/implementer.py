@@ -52,9 +52,18 @@ translate_variables_dict_grid_box = {
     '-relief': 'setStyleSheet',
 }
 
+translate_variables_dict_widget = {
+    '-width': 'setMaximumWidth',
+    '-height': 'setMaximumHeight',
+    '-background': 'setStyleSheet',
+}
+
+
 def translate_variables(class_name, key):
     if class_name == QGroupBox: # TODO Switch? (pythonic)
         return translate_variables_dict_grid_box[key]
+    elif class_name == QWidget:
+        return translate_variables_dict_widget[key]
     else:
         return translate_variables_dict_all[key]
 
@@ -214,6 +223,10 @@ class Implementer(QApplication):
             else:
                 widget = class_name(self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
             self.namer[construct_command[1]] = widget
+
+            for key in aditional_options.keys():
+                self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+
             return # TODO Make it nicer
 
         if class_name == QPushButton:
