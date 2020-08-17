@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
+import tktoqt
+
 TOP="top"
 RIGHT="right"
 BOTTOM="bottom"
@@ -31,53 +33,10 @@ def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
 import sys
 sys.setprofile(tracefunc)                    # TODO: Remove ^
 
-# This could mean quite work and also might need 1 for each of QT classes...
-# TODO Yep, Labeld Frame :(
-translate_variables_dict_all = {
-    '-text': 'setText',
-    '-command': 'clicked.connect',
-    '-fg': 'setStyleSheet',
-    '-padx': 'setStyleSheet',
-    '-pady': 'setStyleSheet',
-    '-width': 'setMaxLength', # Entry
-    '-height': 'setPointSize', # Text
-}
 
-translate_variables_dict_grid_box = {
-    '-text': 'setTitle',
-    '-command': 'clicked.connect',
-    '-fg': 'setStyleSheet',
-    '-padx': 'setStyleSheet',
-    '-pady': 'setStyleSheet',
-    '-relief': 'setStyleSheet',
-}
+# --------------------------------------------
 
-translate_variables_dict_widget = {
-    '-width': 'setMaximumWidth',
-    '-height': 'setMaximumHeight',
-    '-background': 'setStyleSheet',
-}
-
-
-def translate_variables(class_name, key):
-    if class_name == QGroupBox: # TODO Switch? (pythonic)
-        return translate_variables_dict_grid_box[key]
-    elif class_name == QWidget:
-        return translate_variables_dict_widget[key]
-    else:
-        return translate_variables_dict_all[key]
-
-# For translating styling => # TODO Rework
-translate_params = {
-    'red': 'color: red;', # TODO: This could be improved to not have line for every needed color :) , also stating that red means foreground-color (color in PyQt) is quite bad
-    5: 'padding:5px' # TODO THIS
-}
-
-# For translating styling
-def translate(param):
-    return translate_params.get(param, param) # Getter or ommiter
-
-translate_class = {
+translate_class_dict = {
     'frame': QWidget,
     'button': QPushButton,
     'label': QLabel,
@@ -85,6 +44,10 @@ translate_class = {
     'text': QFont,
     'labelframe': QGroupBox,
 }
+
+def translate_class(key):
+    # TODO Doc
+    return translate_class_dict[key]
 
 
 class Implementer(QApplication):
@@ -105,12 +68,13 @@ class Implementer(QApplication):
         self.window.show()
 
     def call_method(self, o, name, params):
+        # TODO: Doc - "o" is object.; params needs to be translated
         if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
             func = self.commands.get(params)
             return o.clicked.connect(func)
 
         try: # TODO: Remove this and support most of attributes
-            return getattr(o, name)(translate(params))
+            return getattr(o, name)(params)
         except KeyError:
             pass
 
@@ -206,13 +170,20 @@ class Implementer(QApplication):
 
         if construct_command[1] in ['configure']:
             widget = self.namer[construct_command[0]]
+
+            # Translace additional options # TODO Done here and later
+            aditional_options = tktoqt.translate_parameters_for_class(widget.__class__, aditional_options)
+
             for key in aditional_options.keys():
-               self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+               self.call_method(widget, key, aditional_options[key])
 
             return # TODO Make it nicer
             
         #print(construct_command)
-        class_name = translate_class[construct_command[0]]
+        class_name = translate_class(construct_command[0])
+
+        # Translate additional options # TODO Done here and later
+        aditional_options = tktoqt.translate_parameters_for_class(class_name, aditional_options)
 
         if class_name == QWidget:
             if self.window is None:
@@ -225,7 +196,7 @@ class Implementer(QApplication):
             self.namer[construct_command[1]] = widget
 
             for key in aditional_options.keys():
-                self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+                self.call_method(widget, key, aditional_options[key])
 
             return # TODO Make it nicer
 
@@ -233,7 +204,7 @@ class Implementer(QApplication):
             widget = class_name(aditional_options.get('-text', "N/A"), self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
                 
             for key in aditional_options.keys():
-               self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+               self.call_method(widget, key, aditional_options[key])
 
             self.namer[construct_command[1]] = widget
             return # TODO Make it nicer
@@ -246,7 +217,7 @@ class Implementer(QApplication):
             widget = class_name()
                 
         for key in aditional_options.keys():
-            self.call_method(widget, translate_variables(widget.__class__, key), aditional_options[key])
+            self.call_method(widget, key, aditional_options[key])
 
         self.namer[construct_command[1]] = widget
 
