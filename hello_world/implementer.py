@@ -185,6 +185,9 @@ class Implementer(QApplication):
         # Translate additional options # TODO Done here and later
         aditional_options = tktoqt.translate_parameters_for_class(class_name, aditional_options)
 
+        # Save master
+        master_id = construct_command[1][:construct_command[1].rfind('.!')]
+
         if class_name == QWidget:
             if self.window is None:
                 widget = class_name() # TODO Different constructors - Widget, Button ...
@@ -192,7 +195,7 @@ class Implementer(QApplication):
                 widget.move(50,50) # TODO Hardcoded
                 self.window = widget # TODO: Only first one
             else:
-                widget = class_name(self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
+                widget = class_name(self.namer[master_id])
             self.namer[construct_command[1]] = widget
 
             for key in aditional_options.keys():
@@ -201,7 +204,7 @@ class Implementer(QApplication):
             return # TODO Make it nicer
 
         if class_name == QPushButton:
-            widget = class_name(aditional_options.get('-text', "N/A"), self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
+            widget = class_name(aditional_options.get('-text', "N/A"), self.namer[master_id])
                 
             for key in aditional_options.keys():
                self.call_method(widget, key, aditional_options[key])
@@ -211,8 +214,8 @@ class Implementer(QApplication):
 
         # "Else"
 
-        if construct_command[1][:construct_command[1].rfind('.!')] != '':
-            widget = class_name(self.namer[construct_command[1][:construct_command[1].rfind('.!')]])
+        if master_id != '':
+            widget = class_name(self.namer[master_id])
         else:
             widget = class_name()
                 
