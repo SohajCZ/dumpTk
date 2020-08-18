@@ -7,6 +7,8 @@ from PyQt5.QtCore import QCoreApplication
 
 import tktoqt
 
+from layouter import Layouter
+
 TOP="top"
 RIGHT="right"
 BOTTOM="bottom"
@@ -55,15 +57,13 @@ class Implementer(QApplication):
         super(Implementer, self).__init__([])
         self.namer = { '.': self }
         self.commands = dict()
-        self.content = None
-        self.layout = None
-        self.state = None # Default
         self.window = None
-        #print("Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
+        self.layouter = Layouter()
 
     def show(self):
         if not self.window:
             self.window = QWidget() # TODO params
+            self.window.setLayout(self.layouter.layout) # TODO This might solve it
 
         self.window.show()
 
@@ -87,41 +87,8 @@ class Implementer(QApplication):
 
     # TODO: Since not supporting multiple Frames / Widgets, for instance packing-tkinter example, it is not working everytime. 
     def _add_widget(self, widget, side=TOP, *args): # TODO: Other args
-        #print("Before:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
-        if self.state is None: # First time
-             if side in [TOP, BOTTOM]:
-                 self.content = QVBoxLayout()
-                 if side == BOTTOM: # According to TK testing - once it is set up, it remains.
-                    self.content.setDirection(QBoxLayout.BottomToTop)
-             elif side in [LEFT, RIGHT]:
-                 self.content = QHBoxLayout()
-                 if side == RIGHT: # According to TK testing - once it is set up, it remains.
-                    self.content.setDirection(QBoxLayout.RightToLeft)
-             self.layout = self.content
-             self.window.setLayout(self.content)
-             self.state = side
-             #print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
-             return
+        self.layouter.add_widget(widget, "pack", side)
 
-        if side in [TOP, BOTTOM]:
-            if self.state not in [TOP, BOTTOM]:
-                content = QVBoxLayout()
-                if side == BOTTOM: # According to TK testing - once it is set up, it remains.
-                    content.setDirection(QBoxLayout.BottomToTop)
-                self.content.addLayout(content)
-                self.content = content
-            self.content.addWidget(widget)
-        elif side in [LEFT, RIGHT]:
-            if self.state not in [LEFT, RIGHT]: 
-                content = QHBoxLayout()
-                if side == RIGHT: # According to TK testing - once it is set up, it remains.
-                    content.setDirection(QBoxLayout.RightToLeft)
-                self.content.addLayout(content)
-                self.content = content
-            self.content.addWidget(widget)
-
-        self.state = side
-        #print("After:: Content: ", self.content, "Layout: ", self.layout, "State: ", self.state)
         return
 
     def call(self, *args): # TODO: Args
@@ -194,6 +161,7 @@ class Implementer(QApplication):
                 widget.resize(0,0) # TODO Hardcoded
                 widget.move(50,50) # TODO Hardcoded
                 self.window = widget # TODO: Only first one
+                self.layouter.master = widget # TODO This needs to be gone
             else:
                 widget = class_name(self.namer[master_id])
             self.namer[construct_command[1]] = widget
