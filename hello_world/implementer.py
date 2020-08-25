@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout , \
-                            QGroupBox
+                            QGroupBox, QMenu, QMainWindow, QAction
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -45,11 +45,38 @@ translate_class_dict = {
     'entry': QLineEdit,
     'text': QFont,
     'labelframe': QGroupBox,
+    'menu': QMenu
 }
 
 def translate_class(key):
     # TODO Doc
     return translate_class_dict[key]
+
+
+class Menu(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self): # TODO: Remove
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')
+
+        impMenu = QMenu('Import', self)
+        impAct = QAction('Import mail', self)
+        impMenu.addAction(impAct)
+
+        newAct = QAction('New', self)
+
+        fileMenu.addAction(newAct)
+        fileMenu.addMenu(impMenu)
+
+        self.setGeometry(300, 300, 300, 200)
+        self.setWindowTitle('Submenu')
+        self.show()
 
 
 class Implementer(QApplication):
@@ -59,13 +86,15 @@ class Implementer(QApplication):
         self.commands = dict()
         self.window = None
         self.layouter = Layouter()
+        self.menu = Menu()
 
     def show(self):
         if not self.window:
             self.window = QWidget() # TODO params
             self.window.setLayout(self.layouter.layout) # TODO This might solve it
 
-        self.window.show()
+        self.menu.setCentralWidget(self.window)
+        self.menu.show()
 
     def call_method(self, o, name, params):
         # TODO: Doc - "o" is object.; params needs to be translated
