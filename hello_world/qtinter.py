@@ -1,9 +1,9 @@
  # TODO: This could be how much I want to support tkinter
-from tkinter import Frame, Button, LabelFrame, Label, Entry, Radiobutton, Text
+from tkinter import Frame, Button, LabelFrame, Label, Entry, Radiobutton, Text, Menu
 from tkinter import StringVar as TkString # TODO: Want to handle this at my own
 from tkinter import Tk as BaseTk
 
-from implementer import Implementer
+from implementer import Implementer, QAction # TODO Ok import?
 
 
 TOP="top"
@@ -45,8 +45,20 @@ class QtCallWrapper:
 
         #print("Chello")
         #print(self.func)
+        #print(str(args[0]))
 
-        if type(*args) == bool: # TODO Wth is this ...
+        #if type(*args) == QAction: # TODO: THIS is generated from Menu buttons
+        #    print(*args)
+
+        #if type(*args) == bool: # TODO: THIS is generated from PushButtons
+        #    print(*args)
+
+        if type(*args) in [bool, QAction]: # TODO Wth is this ...
+            # TODO: Kinda get the QAction ... so this might be problem ...
+            # TODO: Translation from QAction to some TKinter event if needed?
+            # TODO: Might add ptr to Implementer and its commands, commands would hold their QActions added when connected, for checking right QAction, might not be problem, if every button has its own fuctions and it wont share. But that doesn't really make sense, since there could be connected more slots to one signal.
+            # TODO: Yep ... just tested it ... Menu M with Actions A1 and A2 with commands A1-C1 and A2-C2, clicking A1 triggered C1 AND C2.
+            # TODO: Might need to handle Actions not via QMenu.addAction() but asi objects so that cound be added.
             #print(*args, args, args[0])
             args={}
 

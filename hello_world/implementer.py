@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout , \
-                            QGroupBox, QMenu, QMainWindow, QAction
+                            QGroupBox, QMainWindow, QMenu, QAction
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -45,39 +45,41 @@ translate_class_dict = {
     'entry': QLineEdit,
     'text': QFont,
     'labelframe': QGroupBox,
-    'menu': QMenu
+    'menu': QMenu,
 }
+
+
+# --------------------------------------------
 
 def translate_class(key):
     # TODO Doc
     return translate_class_dict[key]
 
 
-class Menu(QMainWindow):
+class Menu(QMainWindow): # TODO: Rename, naming wrong ...
 
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        self.label = ""
 
-    def initUI(self): # TODO: Remove
+        return
 
+    def add_menu(self, menu):
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('File')
 
-        impMenu = QMenu('Import', self)
-        impAct = QAction('Import mail', self)
-        impMenu.addAction(impAct)
+        if self.label != "":
+            menu.setTitle(self.label) # TODO: This might be doing problems. IDK yet.
+            self.label = ""
 
-        newAct = QAction('New', self)
+        menubar.addMenu(menu)
 
-        fileMenu.addAction(newAct)
-        fileMenu.addMenu(impMenu)
+    def remember_label(self, label):
+        if self.label != "":
+            print("Warning - need to make queue") # TODO Remove if possible or implement queue
+        self.label = label
 
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Submenu')
-        self.show()
-
+# --------------------------------------------
 
 class Implementer(QApplication):
     def __init__(self, name):
@@ -86,21 +88,33 @@ class Implementer(QApplication):
         self.commands = dict()
         self.window = None
         self.layouter = Layouter()
+        self.menu = None
+
+    def create_menu(self, menu=None):
+        # TODO: Docs. Menu here is menu from TKinter and I might need it later.
         self.menu = Menu()
+        self.namer['.!menu'] = self.menu # Sneak own menu ... # TODO Hardcoded naming?
 
     def show(self):
         if not self.window:
             self.window = QWidget() # TODO params
             self.window.setLayout(self.layouter.layout) # TODO This might solve it
 
-        self.menu.setCentralWidget(self.window)
-        self.menu.show()
+        if self.menu: # Application has menu.
+            self.menu.setCentralWidget(self.window)
+            self.menu.show()
+        else:
+            self.window.show()
 
     def call_method(self, o, name, params):
         # TODO: Doc - "o" is object.; params needs to be translated
-        if 'clicked.' in name: # TODO: IDK what else, but . should really not be in name ...
+        if '.' in name: # TODO: IDK what else, but . should really not be in name ...
             func = self.commands.get(params)
-            return o.clicked.connect(func)
+            # TODO: EW
+            if name.split('.')[0] == 'clicked':
+                return o.clicked.connect(func)
+            elif name.split('.')[0] == 'triggered[QAction]':
+                return o.triggered[QAction].connect(func)
 
         try: # TODO: Remove this and support most of attributes
             return getattr(o, name)(params)
@@ -149,9 +163,12 @@ class Implementer(QApplication):
 	# Parse other aditional options
         aditional_options = dict()
 
-        if len(construct_command)>2:
-            for i in range(2+(construct_command[0] in ['pack', 'grid']), len(construct_command), 2):
-                aditional_options[construct_command[i]] = construct_command[i+1]
+        if len(construct_command)>2:				# TODO Next to command and cascade could be menu-checkbox and so on.
+            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade']), len(construct_command), 2):
+                if construct_command[i] != '-menu':
+                    aditional_options[construct_command[i]] = construct_command[i+1]
+                else: # Sneak PyQT menu instead of TKinter menu.
+                    aditional_options[construct_command[i]] = self.namer[str(construct_command[i+1])]
             #print(aditional_options)
 
         # If packing insert widget
@@ -164,7 +181,7 @@ class Implementer(QApplication):
         if construct_command[0] in ['grid']: # TODO: Get together
             return
 
-        if construct_command[1] in ['configure']:
+        if construct_command[1] in ['configure', 'add']: # Add for menu
             widget = self.namer[construct_command[0]]
 
             # Translace additional options # TODO Done here and later

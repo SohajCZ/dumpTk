@@ -18,6 +18,19 @@ parameters_names_mapping = { # TODO All
         '-text': 'setTitle',
         '-relief': 'setStyleSheet', # TODO Not really implemented
     },
+    "QMenu": {
+        '-label': 'addAction',
+        '-command': 'triggered[QAction].connect',
+        '-menu': 'addMenu',
+      # TODO QMenu nemá menu ... ffs
+    },
+    "Menu": { # TODO: Might change name
+        '-menu':  'add_menu', # My own function
+        '-label': 'remember_label',
+    },
+    "Implementer": { # TODO: Might change name
+        '-menu': 'create_menu', # My own function
+    },
 #        '-width': 'setMaxLength', # Entry # TODO IDK if OK.
 #        '-height': 'setPointSize', # Text # TODO IDK if OK.
 }
