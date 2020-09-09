@@ -113,7 +113,7 @@ class Implementer(QApplication):
             # TODO: EW
             if name.split('.')[0] == 'clicked':
                 return o.clicked.connect(func)
-            elif name.split('.')[0] == 'triggered[QAction]':
+            elif name.split('.')[0] == 'triggered[QAction]': # TODO Cant get here now
                 return o.triggered[QAction].connect(func)
 
         try: # TODO: Remove this and support most of attributes
@@ -134,6 +134,7 @@ class Implementer(QApplication):
 
         return
 
+    # TODO Variable Spellcheck
     def call(self, *args): # TODO: Args
         construct_command = args[0]
 
@@ -186,6 +187,15 @@ class Implementer(QApplication):
 
             # Translace additional options # TODO Done here and later
             aditional_options = tktoqt.translate_parameters_for_class(widget.__class__, aditional_options)
+
+            if widget.__class__ == QMenu: # It is menu. Needs combinations. Maybe more. TODO
+               # TODO Check if labels
+               label = aditional_options.pop('addAction', None)
+               command = aditional_options.pop('triggered[QAction].connect', None)
+               action = QAction(label, widget)
+               if command:
+                   action.triggered.connect(self.commands[command])
+               widget.addAction(action)
 
             for key in aditional_options.keys():
                self.call_method(widget, key, aditional_options[key])
