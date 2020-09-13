@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
                             QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
-                            QCheckBox, QRadioButton, QListWidget, QComboBox
+                            QCheckBox, QRadioButton, QListWidget, QComboBox, QFileDialog
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -118,6 +118,12 @@ class Implementer(QApplication):
         # TODO: Docs. Menu here is menu from TKinter and I might need it later.
         self.menu = Menu()
         self.namer['.!menu'] = self.menu # Sneak own menu ... # TODO Hardcoded naming?
+
+    def execute_file_dialog(self, dialog_method):
+        # TODO
+        dialog = QFileDialog(self.window)
+        result = getattr(dialog, dialog_method)()
+        print(result)
 
     def show(self):
         if not self.window:
@@ -244,7 +250,10 @@ class Implementer(QApplication):
                 self.window = widget # TODO: Only first one
                 self.layouter.master = widget # TODO This needs to be gone - layouter
             else:
-                widget = class_name(self.namer[master_id])
+                if master_id != '': # TODO Now this is sketchy
+                    widget = create_class_with_master(class_name,self.namer[master_id])
+                else:
+                    widget = class_name()
             self.namer[construct_command[1]] = widget
 
             for key in aditional_options.keys():
