@@ -16,7 +16,7 @@ class MixedLayouts(Exception):
 
 class Layouter: # TODO Pack / Grid polymorfism.
 
-    def __init__(self, kind=None, side=None, *args): # TODO: Args
+    def __init__(self, kind=None):
         self.kind=None
         self.layout = None
         self.top = None
@@ -32,11 +32,11 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self._manual_init(kind)
         
-    def _manual_init(self, kind, side=None):
+    def _manual_init(self, kind, other_args):
         self.kind = kind
 
         if kind == PACK:
-            self._init_pack(side)
+            self._init_pack(other_args.get('side', TOP))
         elif kind == GRID:
             self._init_grid()
         # TODO Else? (place)
@@ -100,25 +100,32 @@ class Layouter: # TODO Pack / Grid polymorfism.
         else:
             return self.bottom
 
-    def pack_widget(self, widget, side, *args): # TODO args?
+    def pack_widget(self, widget, other_args):
+        side = other_args.get('-side', "top")
+        # TODO: Other args
+
         self._get_layout_for_side(side).addWidget(widget)
 
-    def grid_widget(self, widget, row, column, *args): # TODO args? sticky ...
+    def grid_widget(self, widget, other_args):
+        row = other_args.get('-row', 0)
+        column = other_args.get('-column', 0)
+        # TODO: Other args
+
         self.layout.addWidget(widget, row, column)
 
-    def add_widget(self, widget, kind, side=None, *args):
+    def add_widget(self, widget, kind, other_args):
         # TODO: Docs. Args could be side for pack, row/column for grid, sticky and so on.
 
         if not self.inited:
-            self._manual_init(kind, side)
+            self._manual_init(kind, other_args)
 
         if kind != self.kind:
             raise MixedLayouts
 
         if kind == PACK:
-            self.pack_widget(widget, side, *args) # TODO other args?
+            self.pack_widget(widget, other_args) # TODO other args?
         elif kind == GRID:
-            self.grid_widget(widget, *args) # TODO other args? (also row and column now).
+            self.grid_widget(widget, other_args) # TODO other args? (also row and column now).
         # TODO Else? (place)
         
 

@@ -153,10 +153,12 @@ class Implementer(QApplication):
             self.commands[cbname] = bound_method
 
     # TODO: Since not supporting multiple Frames / Widgets, for instance packing-tkinter example, it is not working everytime. 
-    def _add_widget(self, widget, side=TOP, *args): # TODO: Other args
-        self.layouter.add_widget(widget, "pack", side)
+    def _add_widget(self, widget, kind, other_args):
+        if widget.__class__ == QFont:
+            return # TODO What is purpose of setting grid to label? Why not labeled?
 
-        return
+        self.layouter.add_widget(widget, kind, other_args)
+
 
     # TODO Variable Spellcheck
     def call(self, *args): # TODO: Args
@@ -197,13 +199,11 @@ class Implementer(QApplication):
             #print(aditional_options)
 
         # If packing insert widget
-        if construct_command[0] in ['pack']: # TODO: Also Grid & place exists.
+        if construct_command[0] in ['pack', 'grid']: # TODO: Also Grid & place exists.
             #print("Construct command", construct_command)
             #print(self.namer[construct_command[2]], aditional_options)
-            self._add_widget(self.namer[construct_command[2]], side=aditional_options.get("-side",TOP))
-            return
-
-        if construct_command[0] in ['grid']: # TODO: Get together
+            self._add_widget(self.namer[construct_command[2]],
+                             construct_command[0], aditional_options)
             return
 
         if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
