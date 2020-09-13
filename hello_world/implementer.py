@@ -100,7 +100,8 @@ class Menu(QMainWindow): # TODO: Rename, naming wrong ...
 
     def remember_label(self, label):
         if self.label != "":
-            print("Warning - need to make queue") # TODO Remove if possible or implement queue
+            # TODO Remove if possible or implement queue
+            print("Warning - need to make queue", file=sys.stderr)
         self.label = label
 
 # --------------------------------------------
@@ -120,7 +121,7 @@ class Implementer(QApplication):
             self.namer[key] = item
         else:
             if key != '.!menu':
-                print("Warning - duplicated key entry for namer:", key)
+                print("Warning - duplicated key entry for namer:", key, file=sys.stderr)
 
     def create_menu(self, menu=None):
         # TODO: Docs.
