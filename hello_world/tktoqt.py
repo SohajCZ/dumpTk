@@ -19,6 +19,10 @@ def translate_parameters_names(class_name, parameters):
     translated_parameters = {}
  
     for parameter in parameters:
+        if parameter not in mapping:
+            print("Warning,", parameter, "not in mapping.")
+            continue
+
         translated_parameters[mapping[parameter]] = parameters[parameter]
 
     return translated_parameters

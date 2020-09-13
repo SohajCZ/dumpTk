@@ -1,5 +1,9 @@
  # TODO: This could be how much I want to support tkinter
-from tkinter import Frame, Button, LabelFrame, Label, Entry, Radiobutton, Text, Menu
+from tkinter import Frame, Button, LabelFrame, Label, Entry, \
+                    Radiobutton, Text, Menu, Spinbox, Scale, \
+                    Listbox, Checkbutton
+from tkinter.ttk import Combobox
+from tkinter import filedialog
 from tkinter import StringVar as TkString # TODO: Want to handle this at my own
 from tkinter import Tk as BaseTk
 
@@ -19,7 +23,7 @@ W="Whatever" #TODO
 N="Whatever" #TODO
 S="Whatever" #TODO
 END="Whatever" #TODO
-
+HORIZONTAL="Whatever" #TODO
 
 class StringVar(TkString):
     def __init__(self, master=None, value=None, name=None):

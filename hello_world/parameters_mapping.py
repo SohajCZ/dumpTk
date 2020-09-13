@@ -19,10 +19,22 @@ parameters_names_mapping = { # TODO All
         '-relief': 'setStyleSheet', # TODO Not really implemented
     },
     "QMenu": {
-        '-label': 'addAction',
-        '-command': 'triggered[QAction].connect',
+        '-label': 'addAction', # TODO Remove if combinations working.
+        '-command': 'triggered[QAction].connect', # TODO Remove if combinations working.
         '-menu': 'addMenu',
-      # TODO QMenu nemá menu ... ffs
+    },
+    "QGroupBox": {
+        '-text': 'setTitle',
+    },
+    "QLabel": {
+        '-text': 'setText',
+    },
+    "QSpinBox": {
+        '-from': 'setMinimum',
+        '-to': 'setMaximum',
+    },
+    "QComboBox": {
+        # TODO '-values': 'addItems',
     },
     "Menu": { # TODO: Might change name
         '-menu':  'add_menu', # My own function
@@ -44,13 +56,12 @@ def get_parameters_names_mapping(class_name):
 parameters_values_mapping = {
     "all": {
         '-padx': 'padding: {} px;',
+        '-pady': 'padding: {} px;', # TODO Well there is no difference between horizontal and vertical padding? ...
         '-fg': 'color: {} ;',
-        # TODO: Other common options
     },
     "QWidget": {
-        '-background': 'background-color: {} ;', # TODO - This wont work.
-    }
-    # TODO - If any widget (or subclass) behaves differently.
+        '-background': 'background-color: {} ;',
+    },
 }
 
 def get_parameters_values_mapping(class_name):

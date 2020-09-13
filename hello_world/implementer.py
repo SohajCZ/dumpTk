@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
-                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout , \
-                            QGroupBox, QMainWindow, QMenu, QAction
+                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
+                            QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
+                            QCheckBox, QRadioButton, QListWidget, QComboBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -22,6 +23,7 @@ W="Whatever" #TODO
 N="Whatever" #TODO
 S="Whatever" #TODO
 END="Whatever" #TODO
+HORIZONTAL="Whatever" #TODO
 
 def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
       if event == "call":
@@ -35,6 +37,15 @@ def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
 import sys
 sys.setprofile(tracefunc)                    # TODO: Remove ^
 
+# --------------------------------------------
+
+def create_class_with_master(class_name, master):
+    # TODO Doc
+    if class_name in [QFont]:
+        return class_name()
+    else:
+        return class_name(master)
+
 
 # --------------------------------------------
 
@@ -46,7 +57,20 @@ translate_class_dict = {
     'text': QFont,
     'labelframe': QGroupBox,
     'menu': QMenu,
+    'spinbox': QSpinBox,
+    'scale': QSlider,
+    'checkbutton': QCheckBox,
+    'radiobutton': QRadioButton,
+    'listbox': QListWidget,
+    'combobox': QComboBox,
 }
+
+ttk_dict = {}
+
+for item in translate_class_dict:
+    ttk_dict['ttk::'+item] = translate_class_dict[item] # TODO: Rightful omitment of ttk?
+
+translate_class_dict.update(ttk_dict)
 
 
 # --------------------------------------------
@@ -165,7 +189,7 @@ class Implementer(QApplication):
         aditional_options = dict()
 
         if len(construct_command)>2:				# TODO Next to command and cascade could be menu-checkbox and so on.
-            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade']), len(construct_command), 2):
+            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade', 'separator']), len(construct_command), 2):
                 if construct_command[i] != '-menu':
                     aditional_options[construct_command[i]] = construct_command[i+1]
                 else: # Sneak PyQT menu instead of TKinter menu.
@@ -182,9 +206,10 @@ class Implementer(QApplication):
         if construct_command[0] in ['grid']: # TODO: Get together
             return
 
-        if construct_command[1] in ['configure', 'add']: # Add for menu
+        if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
             widget = self.namer[construct_command[0]]
 
+            # TODO: Separator to menu.
             # Translace additional options # TODO Done here and later
             aditional_options = tktoqt.translate_parameters_for_class(widget.__class__, aditional_options)
 
@@ -214,10 +239,10 @@ class Implementer(QApplication):
         if class_name == QWidget:
             if self.window is None:
                 widget = class_name() # TODO Different constructors - Widget, Button ...
-                widget.resize(0,0) # TODO Hardcoded
-                widget.move(50,50) # TODO Hardcoded
+                #widget.resize(0,0) # TODO Hardcoded
+                #widget.move(50,50) # TODO Hardcoded
                 self.window = widget # TODO: Only first one
-                self.layouter.master = widget # TODO This needs to be gone
+                self.layouter.master = widget # TODO This needs to be gone - layouter
             else:
                 widget = class_name(self.namer[master_id])
             self.namer[construct_command[1]] = widget
@@ -227,19 +252,10 @@ class Implementer(QApplication):
 
             return # TODO Make it nicer
 
-        if class_name == QPushButton:
-            widget = class_name(aditional_options.get('-text', "N/A"), self.namer[master_id])
-                
-            for key in aditional_options.keys():
-               self.call_method(widget, key, aditional_options[key])
-
-            self.namer[construct_command[1]] = widget
-            return # TODO Make it nicer
-
         # "Else"
 
-        if master_id != '':
-            widget = class_name(self.namer[master_id])
+        if master_id != '': # TODO Now this is sketchy
+            widget = create_class_with_master(class_name,self.namer[master_id])
         else:
             widget = class_name()
                 
