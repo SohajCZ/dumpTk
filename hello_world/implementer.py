@@ -236,24 +236,13 @@ class Implementer(QApplication):
         # Save master
         master_id = construct_command[1][:construct_command[1].rfind('.!')]
 
-        if class_name == QWidget:
+        if class_name in [QWidget, QGroupBox]:
             if self.window is None:
                 widget = class_name() # TODO Different constructors - Widget, Button ...
                 #widget.resize(0,0) # TODO Hardcoded
                 #widget.move(50,50) # TODO Hardcoded
                 self.window = widget # TODO: Only first one
                 self.layouter.master = widget # TODO This needs to be gone - layouter
-            else:
-                if master_id != '': # TODO Now this is sketchy
-                    widget = create_class_with_master(class_name,self.namer[master_id])
-                else:
-                    widget = class_name()
-            self.namer[construct_command[1]] = widget
-
-            for key in aditional_options.keys():
-                self.call_method(widget, key, aditional_options[key])
-
-            return # TODO Make it nicer
 
         # "Else"
 
