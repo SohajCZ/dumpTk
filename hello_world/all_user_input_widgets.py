@@ -1,8 +1,8 @@
 # Source: https://runestone.academy/runestone/books/published/thinkcspy/GUIandEventDrivenProgramming/03_widgets.html
 
 import qtinter as tk
-from tkinter import ttk
-from tkinter import filedialog
+import qtinter as ttk
+import qtfiledialog as filedialog
 
 
 class Counter_program():
