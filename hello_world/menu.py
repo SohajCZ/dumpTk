@@ -1,4 +1,5 @@
 from qtinter import *
+import qtfiledialog as filedialog
 
 class Window(Frame):
     def __init__(self, master=None):
@@ -18,11 +19,19 @@ class Window(Frame):
         editMenu.add_command(label="Redo")
         menu.add_cascade(label="Edit", menu=editMenu)
 
+        dialogMenu = Menu(menu)
+        dialogMenu.add_command(label="Open", command=self.print_file_name)
+        dialogMenu.add_command(label="Save", command=filedialog.asksaveasfilename)
+        menu.add_cascade(label="Dialog", menu=dialogMenu)
+
     def exitProgram(self):
         exit()
 
     def say_hi(self):
         print('chello')
+
+    def print_file_name(self):
+        print(filedialog.askopenfilename())
         
 root = Tk()
 app = Window(root)

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
                             QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
-                            QCheckBox, QRadioButton, QListWidget, QComboBox, QFileDialog
+                            QCheckBox, QRadioButton, QListWidget, QComboBox
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -118,12 +118,6 @@ class Implementer(QApplication):
         # TODO: Docs. Menu here is menu from TKinter and I might need it later.
         self.menu = Menu()
         self.namer['.!menu'] = self.menu # Sneak own menu ... # TODO Hardcoded naming?
-
-    def execute_file_dialog(self, dialog_method):
-        # TODO
-        dialog = QFileDialog(self.window)
-        result = getattr(dialog, dialog_method)()
-        print(result)
 
     def show(self):
         if not self.window:

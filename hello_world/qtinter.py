@@ -3,7 +3,6 @@ from tkinter import Frame, Button, LabelFrame, Label, Entry, \
                     Radiobutton, Text, Menu, Spinbox, Scale, \
                     Listbox, Checkbutton
 from tkinter.ttk import Combobox
-from tkinter import filedialog
 from tkinter import StringVar as TkString # TODO: Want to handle this at my own
 from tkinter import Tk as BaseTk
 
@@ -31,21 +30,6 @@ class StringVar(TkString):
 
     def __str__(self):
         return value
-
-# ---------------------------------------------
-
-# TODO: Decide how to use
-file_dialog_translate = {
-    'askopenfilename': 'getOpenFileName',
-    'asksaveasfilename': 'getSaveFileName',
-    'askopenfilenames': 'getOpenFileNames',
-    'askopenfile': 'TODO', # TODO: Need to make my own function ...?
-    'askopenfiles': 'TODO', # TODO: Need to make my own function ...?
-    'asksaveasfile': 'TODO', # TODO: Need to make my own function ...?
-    'askdirectory': 'getExitingDirectory', # TODO: Additional keyword option: mustexist - determines if selection must be an existing directory.
-}
-
-# ---------------------------------------------
 
 # TODO : Just pasted from Tkinter.
 class QtCallWrapper:
@@ -95,21 +79,10 @@ class TkWrapper:
         # print(*args)
         return self.tk.call(*args)
 
-    def decide_if_dialog_func(self, cbname, bound_method):
-        method_name = bound_method.__self__.func.__name__
-        if method_name in file_dialog_translate:
-            return QtCallWrapper(lambda: self.tk.execute_file_dialog(
-                                         file_dialog_translate[method_name]),
-                                 bound_method.__self__.subst).__call__
-
-        return None
-
     def createcommand(self, cbname, bound_method):
         origin_call_wrapper = bound_method.__self__
 
-        f = self.decide_if_dialog_func(cbname, bound_method)
-        if not f: # Function is not from filedialog.
-            f = QtCallWrapper(origin_call_wrapper.func, origin_call_wrapper.subst).__call__
+        f = QtCallWrapper(origin_call_wrapper.func, origin_call_wrapper.subst).__call__
 
         name = repr(id(f))
 
