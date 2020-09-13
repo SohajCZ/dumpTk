@@ -108,16 +108,23 @@ class Menu(QMainWindow): # TODO: Rename, naming wrong ...
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
-        self.namer = { '.': self }
+        self.namer = { '.': self, '.!menu': Menu() }
         self.commands = dict()
         self.window = None
         self.layouter = Layouter()
-        self.menu = None
+        self.menu = False
+
+    def add_to_namer(self, key, item):
+        # TODO: Docs. For controll but mainly for forcing own menu. Even when configured at last.
+        if key not in self.namer:
+            self.namer[key] = item
+        else:
+            if key != '.!menu':
+                print("Warning - duplicated key entry for namer:", key)
 
     def create_menu(self, menu=None):
-        # TODO: Docs. Menu here is menu from TKinter and I might need it later.
-        self.menu = Menu()
-        self.namer['.!menu'] = self.menu # Sneak own menu ... # TODO Hardcoded naming?
+        # TODO: Docs.
+        self.menu = True
 
     def show(self):
         if not self.window:
@@ -125,8 +132,8 @@ class Implementer(QApplication):
             self.window.setLayout(self.layouter.layout) # TODO This might solve it
 
         if self.menu: # Application has menu.
-            self.menu.setCentralWidget(self.window)
-            self.menu.show()
+            self.namer['.!menu'].setCentralWidget(self.window)
+            self.namer['.!menu'].show()
         else:
             self.window.show()
 
@@ -252,7 +259,7 @@ class Implementer(QApplication):
         for key in additional_options.keys():
             self.call_method(widget, key, additional_options[key])
 
-        self.namer[construct_command[1]] = widget
+        self.add_to_namer(construct_command[1], widget)
 
 
     def mainloop(self, *args):
