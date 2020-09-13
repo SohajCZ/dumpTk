@@ -187,82 +187,73 @@ class Implementer(QApplication):
             # TODO Why this is here ...???
             return
 
-	# Parse other aditional options
-        aditional_options = dict()
+	# Parse other additional options
+        additional_options = dict()
 
         if len(construct_command)>2:				# TODO Next to command and cascade could be menu-checkbox and so on.
             for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade', 'separator']), len(construct_command), 2):
                 if construct_command[i] != '-menu':
-                    aditional_options[construct_command[i]] = construct_command[i+1]
+                    additional_options[construct_command[i]] = construct_command[i+1]
                 else: # Sneak PyQT menu instead of TKinter menu.
-                    aditional_options[construct_command[i]] = self.namer[str(construct_command[i+1])]
-            #print(aditional_options)
+                    additional_options[construct_command[i]] = self.namer[str(construct_command[i+1])]
+            #print(additional_options)
 
         # If packing insert widget
         if construct_command[0] in ['pack', 'grid']: # TODO: Also Grid & place exists.
             #print("Construct command", construct_command)
-            #print(self.namer[construct_command[2]], aditional_options)
+            #print(self.namer[construct_command[2]], additional_options)
             self._add_widget(self.namer[construct_command[2]],
-                             construct_command[0], aditional_options)
+                             construct_command[0], additional_options)
             return
 
         if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
             widget = self.namer[construct_command[0]]
 
             # TODO: Separator to menu.
-            # Translace additional options # TODO Done here and later
-            aditional_options = tktoqt.translate_parameters_for_class(widget.__class__, aditional_options)
+            # Translate additional options # TODO Done here and later
+            additional_options = tktoqt.translate_parameters_for_class(widget.__class__, additional_options)
 
             if widget.__class__ == QMenu: # It is menu. Needs combinations. Maybe more. TODO
                # TODO Check if labels
-               label = aditional_options.pop('addAction', None)
-               command = aditional_options.pop('triggered[QAction].connect', None)
+               label = additional_options.pop('addAction', None)
+               command = additional_options.pop('triggered[QAction].connect', None)
                action = QAction(label, widget)
                if command:
                    action.triggered.connect(self.commands[command])
                widget.addAction(action)
 
-            for key in aditional_options.keys():
-               self.call_method(widget, key, aditional_options[key])
+            # TODO: QList also needs combinations.
+
+            for key in additional_options.keys():
+               self.call_method(widget, key, additional_options[key])
 
             return # TODO Make it nicer
-            
-        #print(construct_command)
+
         class_name = translate_class(construct_command[0])
 
         # Translate additional options # TODO Done here and later
-        aditional_options = tktoqt.translate_parameters_for_class(class_name, aditional_options)
+        additional_options = tktoqt.translate_parameters_for_class(class_name, additional_options)
 
-        # Save master
+        # Save master for future use.
         master_id = construct_command[1][:construct_command[1].rfind('.!')]
 
-        if class_name in [QWidget, QGroupBox]:
-            if self.window is None:
-                widget = class_name() # TODO Different constructors - Widget, Button ...
-                #widget.resize(0,0) # TODO Hardcoded
-                #widget.move(50,50) # TODO Hardcoded
-                self.window = widget # TODO: Only first one
-                self.layouter.master = widget # TODO This needs to be gone - layouter
+        # If there is no window created, take first window as main.
+        if class_name in [QWidget, QGroupBox] and self.window is None:
+            widget = class_name()
+            self.window = widget
+            self.layouter.master = widget # TODO This needs to be gone - layouter
 
-        # "Else"
-
-        if master_id != '': # TODO Now this is sketchy
+        # Else create class w/wo master. Even when there is master, might not use him.
+        if master_id != '':
             widget = create_class_with_master(class_name,self.namer[master_id])
         else:
             widget = class_name()
                 
-        for key in aditional_options.keys():
-            self.call_method(widget, key, aditional_options[key])
+        for key in additional_options.keys():
+            self.call_method(widget, key, additional_options[key])
 
         self.namer[construct_command[1]] = widget
 
-
-
-
-        #if isinstance(contruct_command, tuple): # TODO OK?
-        #try:
-        #except (KeyError, TypeError): # TODO - Key because Im lazy to implement all and Type because of StringVar BS
-        # Hardcore parser I think ...
 
     def mainloop(self, *args):
         import sys
