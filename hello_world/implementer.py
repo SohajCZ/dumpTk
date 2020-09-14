@@ -109,11 +109,15 @@ class Menu(QMainWindow): # TODO: Rename, naming wrong ...
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
+        #: Dict with widgets ids as keys and widget objects as values
         self.namer = { '.': self, '.!menu': Menu() }
         self.commands = dict()
         self.window = None
-        self.layouter = Layouter()
+        #: Dict with widgets ids as keys and their layouts (Layouter instance) as values
+        self.layouter = { '.': Layouter() }
         self.menu = False
+        #: Dict with widgets ids as keys and their master widgets ids as values
+        self.masters = dict()
 
     def add_to_namer(self, key, item):
         # TODO: Docs. For controll but mainly for forcing own menu. Even when configured at last.
@@ -128,9 +132,9 @@ class Implementer(QApplication):
         self.menu = True
 
     def show(self):
-        if not self.window:
-            self.window = QWidget() # TODO params
-            self.window.setLayout(self.layouter.layout) # TODO This might solve it
+        if not self.window: # TODO Check this part after master layout rework
+            self.window = QWidget()
+            self.window.setLayout(self.layouter['.'].layout) # TODO This might solve it
 
         if self.menu: # Application has menu.
             self.namer['.!menu'].setCentralWidget(self.window)
@@ -160,12 +164,54 @@ class Implementer(QApplication):
         else:
             self.commands[cbname] = bound_method
 
-    # TODO: Since not supporting multiple Frames / Widgets, for instance packing-tkinter example, it is not working everytime. 
-    def _add_widget(self, widget, kind, other_args):
-        if widget.__class__ == QFont:
-            return # TODO What is purpose of setting grid to label? Why not labeled?
 
-        self.layouter.add_widget(widget, kind, other_args)
+    def _add_widget(self, widget_id, kind, other_args):
+        """
+            Add widget strategy: (Layouter ~ layout, just own class)
+            (1a) Application / top level frame ... has Layouter instance.
+                See Implementer.__init__.
+            (1b) No master has Layouter. After initialization, insert layout.
+            (2) If any widget is packed/grid-ed, it is inserted into its masters Layouter.
+                Triggered by callers of this function, always exists because of 1) and 4).
+            (3) In this moment masters Layouter is being initialized, if needed.
+                See Layouter add_widget and _manual_init methods.
+            (4a) Widget gets its non-initialized Layouter.
+                Might be too greedy, buttons dont need it. => (Xb) versions
+            (4b) Nothing happends.
+            (5) If masters layout was newly created, add it ti masters master layout.
+        """ # TODO
+            # When anything inserted into it, layout is inserted in master,
+            # according to its previously inserted numbers ...????
+        """
+            Dočasné zápisky z pozorování test casu:
+            - Přidávám si widgety
+            - udělám layout master widgetu
+            - přidám si wigdety do layoutu (addWidget)
+            - udělám si layout widgetu
+            - přidám layout widgetu do master layoutu (addLayout)
+                - může na stejné místo, jako widgety, zobrazí se správně
+            - toplevelu se setne layout (proto tady asi mám ty čachry s masterem)
+        """
+        master_id = self.masters[widget_id]
+        widget = self.namer[widget_id]
+        master_created = False
+
+        # TODO What is purpose of setting grid to label? Why not labeled?
+        if widget.__class__ == QFont:
+            return
+
+        # Check if master needs layout (1b).
+        if master_id not in self.layouter:
+            self.layouter[master_id] = Layouter()
+            master_created = True
+
+        # Add widget to masters layout (2) and (3).
+        self.layouter[master_id].add_widget(widget, kind, other_args)
+
+        # If new master, create layout for master
+        if master_created:
+            self.layouter[self.masters[master_id]].insert_child_layouter(
+                                                   self.layouter[master_id])
 
 
     # TODO Variable Spellcheck
@@ -198,7 +244,7 @@ class Implementer(QApplication):
 	# Parse other additional options
         additional_options = dict()
 
-        if len(construct_command)>2:				# TODO Next to command and cascade could be menu-checkbox and so on.
+        if len(construct_command)>2:# TODO Next to command and cascade could be menu-checkbox and so on.
             for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade', 'separator']), len(construct_command), 2):
                 if construct_command[i] != '-menu':
                     additional_options[construct_command[i]] = construct_command[i+1]
@@ -210,9 +256,9 @@ class Implementer(QApplication):
         if construct_command[0] in ['pack', 'grid']: # TODO: Also Grid & place exists.
             #print("Construct command", construct_command)
             #print(self.namer[construct_command[2]], additional_options)
-            self._add_widget(self.namer[construct_command[2]],
+            self._add_widget(construct_command[2],
                              construct_command[0], additional_options)
-            return
+            return # TODO Nicer?
 
         if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
             widget = self.namer[construct_command[0]]
@@ -249,12 +295,15 @@ class Implementer(QApplication):
         if class_name in [QWidget, QGroupBox] and self.window is None:
             widget = class_name()
             self.window = widget
-            self.layouter.master = widget # TODO This needs to be gone - layouter
 
         # Else create class w/wo master. Even when there is master, might not use him.
         if master_id != '':
+            # Create widget, some might not need master, let function decide.
             widget = create_class_with_master(class_name,self.namer[master_id])
+            # Insert master to mapping
+            self.masters[construct_command[1]] = master_id
         else:
+            self.masters[construct_command[1]] = '.'
             widget = class_name()
                 
         for key in additional_options.keys():

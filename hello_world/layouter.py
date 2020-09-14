@@ -23,7 +23,12 @@ class Layouter: # TODO Pack / Grid polymorfism.
         self.bottom = None
         self.left = None
         self.right = None
-        self.master = None
+        #: Will be set during first init - first inserted widget.
+        self.side_remainder = None
+        #: Will be set during first init - first inserted widget.
+        self.row_remainder = None
+        #: Will be set during first init - first inserted widget.
+        self.column_remainder = None
 
         self.inited = False
 
@@ -32,20 +37,28 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self._manual_init(kind)
         
-    def _manual_init(self, kind, other_args):
+    def _manual_init(self, kind, other_args={}):
         self.kind = kind
 
         if kind == PACK:
-            self._init_pack(other_args.get('side', TOP))
+            self._init_pack(other_args)
         elif kind == GRID:
-            self._init_grid()
+            self._init_grid(other_args)
         # TODO Else? (place)
-
-        self.master.setLayout(self.layout) # TODO This might solve it
 
         self.inited = True
 
-    def _init_pack(self, side=None):
+    def insert_child_layouter(self, layouter):
+        if self.kind == 'pack':
+            self._get_layout_for_side(self.side_reminder).addLayout(layouter.layout)
+        elif self.kind == 'grid':
+            self.layout.addLayout(layouter.layout,
+                                  self.row_remainder, self.column_remainder)
+        # TODO Else? (place)
+
+    def _init_pack(self, other_args={}):
+        side = other_args.get('-side', TOP)
+        self.side_remainder = side
         # TODO: Docs
 
         # Init vertical layouts
@@ -85,7 +98,12 @@ class Layouter: # TODO Pack / Grid polymorfism.
             self.layout.addLayout(self.row_layout)
             self.layout.addLayout(self.bottom)
 
-    def _init_grid(self):
+    def _init_grid(self, other_args={}):
+        row = other_args.get('-row', 0)
+        self.row_remainder = row
+        column = other_args.get('-column', 0)
+        self.column_remainder = column
+
         self.layout = QGridLayout()
 
     def _get_layout_for_side(self, side=TOP):
@@ -100,7 +118,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
         else:
             return self.bottom
 
-    def pack_widget(self, widget, other_args):
+    def pack_widget(self, widget, other_args={}):
         side = other_args.get('-side', "top")
         # TODO: Other args
 
@@ -113,8 +131,10 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self.layout.addWidget(widget, row, column)
 
-    def add_widget(self, widget, kind, other_args):
-        # TODO: Docs. Args could be side for pack, row/column for grid, sticky and so on.
+    def add_widget(self, widget, kind, other_args={}):
+        # TODO: Docs.
+        # Args could be dict with side for pack (-side),
+        # row (-row)/column (-column) for grid, sticky and so on.
 
         if not self.inited:
             self._manual_init(kind, other_args)
@@ -123,9 +143,9 @@ class Layouter: # TODO Pack / Grid polymorfism.
             raise MixedLayouts
 
         if kind == PACK:
-            self.pack_widget(widget, other_args) # TODO other args?
+            self.pack_widget(widget, other_args)
         elif kind == GRID:
-            self.grid_widget(widget, other_args) # TODO other args? (also row and column now).
+            self.grid_widget(widget, other_args)
         # TODO Else? (place)
         
 
