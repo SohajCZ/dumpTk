@@ -1,3 +1,4 @@
+import sys
 from PyQt5.QtWidgets import *
 from parameters_mapping import get_parameters_values_mapping, get_parameters_names_mapping
 
@@ -20,7 +21,8 @@ def translate_parameters_names(class_name, parameters):
  
     for parameter in parameters:
         if parameter not in mapping:
-            print("Warning,", parameter, "not in mapping.")
+            print("Warning,", parameter, "for class", class_name, "not in mapping.",
+                  file=sys.stderr)
             continue
 
         translated_parameters[mapping[parameter]] = parameters[parameter]
