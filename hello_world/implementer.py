@@ -118,6 +118,8 @@ class Implementer(QApplication):
         self.menu = False
         #: Dict with widgets ids as keys and their master widgets ids as values
         self.masters = dict()
+        #: Dict with widget ids as key and their settings of layout inserting as values
+        self.other_layout_args = dict()
 
     def add_to_namer(self, key, item):
         # TODO: Docs. For controll but mainly for forcing own menu. Even when configured at last.
@@ -134,7 +136,10 @@ class Implementer(QApplication):
     def show(self):
         if not self.window: # TODO Check this part after master layout rework
             self.window = QWidget()
-            self.window.setLayout(self.layouter['.'].layout) # TODO This might solve it
+
+        # Some applications might not have layouts.
+        if self.layouter['.'].inited:
+            self.window.setLayout(self.layouter['.'].layout)
 
         if self.menu: # Application has menu.
             self.namer['.!menu'].setCentralWidget(self.window)
@@ -166,32 +171,6 @@ class Implementer(QApplication):
 
 
     def _add_widget(self, widget_id, kind, other_args):
-        """
-            Add widget strategy: (Layouter ~ layout, just own class)
-            (1a) Application / top level frame ... has Layouter instance.
-                See Implementer.__init__.
-            (1b) No master has Layouter. After initialization, insert layout.
-            (2) If any widget is packed/grid-ed, it is inserted into its masters Layouter.
-                Triggered by callers of this function, always exists because of 1) and 4).
-            (3) In this moment masters Layouter is being initialized, if needed.
-                See Layouter add_widget and _manual_init methods.
-            (4a) Widget gets its non-initialized Layouter.
-                Might be too greedy, buttons dont need it. => (Xb) versions
-            (4b) Nothing happends.
-            (5) If masters layout was newly created, add it ti masters master layout.
-        """ # TODO
-            # When anything inserted into it, layout is inserted in master,
-            # according to its previously inserted numbers ...????
-        """
-            Dočasné zápisky z pozorování test casu:
-            - Přidávám si widgety
-            - udělám layout master widgetu
-            - přidám si wigdety do layoutu (addWidget)
-            - udělám si layout widgetu
-            - přidám layout widgetu do master layoutu (addLayout)
-                - může na stejné místo, jako widgety, zobrazí se správně
-            - toplevelu se setne layout (proto tady asi mám ty čachry s masterem)
-        """
         master_id = self.masters[widget_id]
         widget = self.namer[widget_id]
         master_created = False
@@ -200,18 +179,27 @@ class Implementer(QApplication):
         if widget.__class__ == QFont:
             return
 
-        # Check if master needs layout (1b).
+        # Check if master needs layout.
         if master_id not in self.layouter:
             self.layouter[master_id] = Layouter()
             master_created = True
 
-        # Add widget to masters layout (2) and (3).
+        # Add widget to masters layout.
         self.layouter[master_id].add_widget(widget, kind, other_args)
 
-        # If new master, create layout for master
+        # TODO Why this is not missing??? => Because it knows where the widget is.
+        # Remember other args for future. (New combo after testing, no reminders.)
+        # self.other_layout_args[widget_id] = other_args
+
+        # If new master, set its layout.
         if master_created:
-            self.layouter[self.masters[master_id]].insert_child_layouter(
-                                                   self.layouter[master_id])
+            self.namer[master_id].setLayout(self.layouter[master_id].layout)
+
+            # TODO Why this is not missing??? => Because it knows where the widget is.
+            # If I keep this, it will throw doubles.
+            #self.layouter[self.masters[master_id]].insert_child_layouter(
+            #                                       self.layouter[master_id],
+            #                                       self.other_layout_args[master_id])
 
 
     # TODO Variable Spellcheck

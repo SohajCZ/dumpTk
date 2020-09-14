@@ -23,12 +23,6 @@ class Layouter: # TODO Pack / Grid polymorfism.
         self.bottom = None
         self.left = None
         self.right = None
-        #: Will be set during first init - first inserted widget.
-        self.side_remainder = None
-        #: Will be set during first init - first inserted widget.
-        self.row_remainder = None
-        #: Will be set during first init - first inserted widget.
-        self.column_remainder = None
 
         self.inited = False
 
@@ -48,17 +42,16 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self.inited = True
 
-    def insert_child_layouter(self, layouter):
+    def insert_child_layouter(self, layouter, other_args={}):
         if self.kind == 'pack':
-            self._get_layout_for_side(self.side_reminder).addLayout(layouter.layout)
+            self._get_layout_for_side(other_args.get('-side', TOP)).addLayout(layouter.layout)
         elif self.kind == 'grid':
             self.layout.addLayout(layouter.layout,
-                                  self.row_remainder, self.column_remainder)
+                                  other_args.get('-row'), other_args.get('-column'))
         # TODO Else? (place)
 
     def _init_pack(self, other_args={}):
         side = other_args.get('-side', TOP)
-        self.side_remainder = side
         # TODO: Docs
 
         # Init vertical layouts
@@ -77,8 +70,8 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
             # Init middle column layout and add vertical layouts
             self.column_layout = QHBoxLayout()
-            self.row_layout.addLayout(self.top)
-            self.row_layout.addLayout(self.bottom)
+            self.column_layout.addLayout(self.top)
+            self.column_layout.addLayout(self.bottom)
 
             # Compose layout
             self.layout.addLayout(self.left)
@@ -100,9 +93,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
     def _init_grid(self, other_args={}):
         row = other_args.get('-row', 0)
-        self.row_remainder = row
         column = other_args.get('-column', 0)
-        self.column_remainder = column
 
         self.layout = QGridLayout()
 
@@ -131,7 +122,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self.layout.addWidget(widget, row, column)
 
-    def add_widget(self, widget, kind, other_args={}):
+    def add_widget(self, widget, kind="pack", other_args={}):
         # TODO: Docs.
         # Args could be dict with side for pack (-side),
         # row (-row)/column (-column) for grid, sticky and so on.
