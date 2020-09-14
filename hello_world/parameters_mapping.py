@@ -36,8 +36,12 @@ parameters_names_mapping = { # TODO All
         '-from': 'setMinimum',
         '-to': 'setMaximum',
     },
+    "QRadioButton": {
+        # TODO finish StringVar '-variable': 'setText',
+    },
     "QComboBox": {
-        # TODO '-values': 'addItems',
+        '-values': 'addItems',
+        # TODO finish StringVar'-textvariable': 'setText',
     },
     "Menu": { # TODO: Might change name
         '-menu':  'add_menu', # My own function

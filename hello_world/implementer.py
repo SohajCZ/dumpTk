@@ -239,7 +239,11 @@ class Implementer(QApplication):
             widget = self.namer[construct_command[0]]
 
             if widget.__class__ == QListWidget: # Inserting to List. TODO: Support orientation
-               additional_options['-insert'] = construct_command[3] # TODO: Others? Remove?
+                additional_options['-insert'] = construct_command[3] # TODO: Others? Remove?
+
+            if widget.__class__ == QComboBox and '-values' in additional_options:
+                # Translate string of {values} into array with values.
+                additional_options['-values'] = additional_options['-values'][1:].replace('{','')[:-1].split('} ')
 
             # TODO: Separator to menu.
             # Translate additional options # TODO Done here and later
