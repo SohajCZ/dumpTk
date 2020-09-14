@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
                             QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
-                            QCheckBox, QRadioButton, QListWidget, QComboBox
+                            QCheckBox, QRadioButton, QListWidget, QComboBox, QTextEdit
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QCoreApplication
 
@@ -41,10 +41,8 @@ sys.setprofile(tracefunc)                    # TODO: Remove ^
 
 def create_class_with_master(class_name, master):
     # TODO Doc
-    if class_name in [QFont]:
-        return class_name()
-    else:
-        return class_name(master)
+    # TODO: Do I need this???
+    return class_name(master)
 
 
 # --------------------------------------------
@@ -54,7 +52,7 @@ translate_class_dict = {
     'button': QPushButton,
     'label': QLabel,
     'entry': QLineEdit,
-    'text': QFont,
+    'text': QTextEdit,
     'labelframe': QGroupBox,
     'menu': QMenu,
     'spinbox': QSpinBox,
@@ -175,10 +173,6 @@ class Implementer(QApplication):
         master_id = self.masters[widget_id]
         widget = self.namer[widget_id]
         master_created = False
-
-        # TODO What is purpose of setting grid to label? Why not labeled?
-        if widget.__class__ == QFont:
-            return
 
         # Check if master needs layout.
         if master_id not in self.layouter:
