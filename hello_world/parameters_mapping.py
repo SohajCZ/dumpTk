@@ -38,6 +38,7 @@ parameters_names_mapping = { # TODO All
     },
     "QRadioButton": {
         # TODO finish StringVar '-variable': 'setText',
+        '-command': 'toggled.connect'
     },
     "QComboBox": {
         '-values': 'addItems',

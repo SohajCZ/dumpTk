@@ -79,6 +79,7 @@ def translate_class(key):
     # TODO Doc
     return translate_class_dict[key]
 
+# --------------------------------------------
 
 class Menu(QMainWindow): # TODO: Rename, naming wrong ...
 
@@ -149,9 +150,11 @@ class Implementer(QApplication):
         # TODO: Doc - "o" is object.; params needs to be translated
         if '.' in name: # TODO: IDK what else, but . should really not be in name ...
             func = self.commands.get(params)
-            # TODO: EW
-            if name.split('.')[0] == 'clicked': # TODO: Could connect more observables.
+            # TODO: Switch, different file, # TODO: Could connect more observables.
+            if name.split('.')[0] == 'clicked': # QPushButton
                 return o.clicked.connect(func)
+            elif name.split('.')[0] == 'toggled': # QRadioButton
+                return o.toggled.connect(func)
             elif name.split('.')[0] == 'triggered[QAction]': # TODO Cant get here now
                 return o.triggered[QAction].connect(func)
 
