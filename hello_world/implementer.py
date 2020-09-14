@@ -1,49 +1,11 @@
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, \
+import tktoqt
+
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, \
                             QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
                             QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
                             QCheckBox, QRadioButton, QListWidget, QComboBox, QTextEdit
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import QCoreApplication
-
-import tktoqt
 
 from layouter import Layouter
-
-TOP="top"
-RIGHT="right"
-BOTTOM="bottom"
-LEFT="left"
-RAISED="Whatever" #TODO
-BOTH="Whatever" #TODO
-YES="Whatever" #TODO
-RIDGE="Whatever" #TODO
-E="Whatever" #TODO
-W="Whatever" #TODO
-N="Whatever" #TODO
-S="Whatever" #TODO
-END="Whatever" #TODO
-HORIZONTAL="Whatever" #TODO
-
-def tracefunc(frame, event, arg, indent=[0]): # TODO: Remove v
-      if event == "call":
-          indent[0] += 2
-          #print("-" * indent[0] + "> call function", frame.f_code.co_name)
-      elif event == "return":
-          #print("<" + "-" * indent[0], "exit function", frame.f_code.co_name)
-          indent[0] -= 2
-      return tracefunc
-
-import sys
-sys.setprofile(tracefunc)                    # TODO: Remove ^
-
-# --------------------------------------------
-
-def create_class_with_master(class_name, master):
-    # TODO Doc
-    # TODO: Do I need this???
-    return class_name(master)
-
 
 # --------------------------------------------
 
@@ -187,7 +149,7 @@ class Implementer(QApplication):
             self.namer[master_id].setLayout(self.layouter[master_id].layout)
 
 
-    def call(self, *args): # TODO: Args
+    def call(self, *args):
         construct_command = args[0]
 
         if construct_command == 'info':
@@ -198,7 +160,8 @@ class Implementer(QApplication):
         #print("Construct command", construct_command)
 
         if construct_command == 'destroy':
-            self.quit()
+            self.quit() # TODO: If destroy, then in args is second parameter,
+                        # which is master of deleted widget.
             return
 
         if construct_command == 'wm': # TODO 'WM_DELETE_WINDOW'
@@ -218,12 +181,9 @@ class Implementer(QApplication):
                     additional_options[construct_command[i]] = construct_command[i+1]
                 else: # Sneak PyQT menu instead of TKinter menu.
                     additional_options[construct_command[i]] = self.namer[str(construct_command[i+1])]
-            #print(additional_options)
 
         # If packing insert widget
-        if construct_command[0] in ['pack', 'grid']: # TODO: Also Grid & place exists.
-            #print("Construct command", construct_command)
-            #print(self.namer[construct_command[2]], additional_options)
+        if construct_command[0] in ['pack', 'grid']:
             self._add_widget(construct_command[2],
                              construct_command[0], additional_options)
             return # TODO Nicer?
@@ -277,7 +237,7 @@ class Implementer(QApplication):
         # Else create class w/wo master. Even when there is master, might not use him.
         if master_id != '':
             # Create widget, some might not need master, let function decide.
-            widget = create_class_with_master(class_name,self.namer[master_id])
+            widget = class_name(master_id)
             # Insert master to mapping
             self.masters[construct_command[1]] = master_id
         else:
