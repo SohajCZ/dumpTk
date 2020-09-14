@@ -118,8 +118,6 @@ class Implementer(QApplication):
         self.menu = False
         #: Dict with widgets ids as keys and their master widgets ids as values
         self.masters = dict()
-        #: Dict with widget ids as key and their settings of layout inserting as values
-        self.other_layout_args = dict()
 
     def add_to_namer(self, key, item):
         # TODO: Docs. For controll but mainly for forcing own menu. Even when configured at last.
@@ -152,7 +150,7 @@ class Implementer(QApplication):
         if '.' in name: # TODO: IDK what else, but . should really not be in name ...
             func = self.commands.get(params)
             # TODO: EW
-            if name.split('.')[0] == 'clicked':
+            if name.split('.')[0] == 'clicked': # TODO: Could connect more observables.
                 return o.clicked.connect(func)
             elif name.split('.')[0] == 'triggered[QAction]': # TODO Cant get here now
                 return o.triggered[QAction].connect(func)
@@ -187,22 +185,11 @@ class Implementer(QApplication):
         # Add widget to masters layout.
         self.layouter[master_id].add_widget(widget, kind, other_args)
 
-        # TODO Why this is not missing??? => Because it knows where the widget is.
-        # Remember other args for future. (New combo after testing, no reminders.)
-        # self.other_layout_args[widget_id] = other_args
-
         # If new master, set its layout.
         if master_created:
             self.namer[master_id].setLayout(self.layouter[master_id].layout)
 
-            # TODO Why this is not missing??? => Because it knows where the widget is.
-            # If I keep this, it will throw doubles.
-            #self.layouter[self.masters[master_id]].insert_child_layouter(
-            #                                       self.layouter[master_id],
-            #                                       self.other_layout_args[master_id])
 
-
-    # TODO Variable Spellcheck
     def call(self, *args): # TODO: Args
         construct_command = args[0]
 

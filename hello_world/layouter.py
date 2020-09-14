@@ -42,14 +42,6 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self.inited = True
 
-    def insert_child_layouter(self, layouter, other_args={}):
-        if self.kind == 'pack':
-            self._get_layout_for_side(other_args.get('-side', TOP)).addLayout(layouter.layout)
-        elif self.kind == 'grid':
-            self.layout.addLayout(layouter.layout,
-                                  other_args.get('-row'), other_args.get('-column'))
-        # TODO Else? (place)
-
     def _init_pack(self, other_args={}):
         side = other_args.get('-side', TOP)
         # TODO: Docs
