@@ -238,6 +238,9 @@ class Implementer(QApplication):
         if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
             widget = self.namer[construct_command[0]]
 
+            if widget.__class__ == QListWidget: # Inserting to List. TODO: Support orientation
+               additional_options['-insert'] = construct_command[3] # TODO: Others? Remove?
+
             # TODO: Separator to menu.
             # Translate additional options # TODO Done here and later
             additional_options = tktoqt.translate_parameters_for_class(widget.__class__, additional_options)

@@ -23,6 +23,9 @@ parameters_names_mapping = { # TODO All
         '-command': 'triggered[QAction].connect', # TODO Remove if combinations working.
         '-menu': 'addMenu',
     },
+    "QListWidget": {
+        '-insert': 'addItem',
+    },
     "QGroupBox": {
         '-text': 'setTitle',
     },
