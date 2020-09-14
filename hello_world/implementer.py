@@ -191,33 +191,29 @@ class Implementer(QApplication):
         construct_command = args[0]
 
         if construct_command == 'info':
-            #print(*args) # TODO This is stringvar ... already made with my StringVar.
+            # This is stringvar ... already made with my StringVar.
             return
 
         #print("--------------------------")
         #print("Construct command", construct_command)
 
-        if construct_command[0] == 'radiobutton':
-            return # TODO Implement radiobutton
-
-        if construct_command == 'destroy': # TODO Nasty hack, memory leaks I think
+        if construct_command == 'destroy':
             self.quit()
             return
 
         if construct_command == 'wm': # TODO 'WM_DELETE_WINDOW'
             return
 
-        # TODO Omit place.
+        # TODO Omit place (???)
 
-        if type(construct_command) == str: # TODO: Buddies ? => .!labelframe2.!entry
-            # TODO Why this is here ...???
-            return
+        if type(construct_command) == str: # Adding text to QLineEdit
+            construct_command = args
 
 	# Parse other additional options
         additional_options = dict()
 
         if len(construct_command)>2:# TODO Next to command and cascade could be menu-checkbox and so on.
-            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] == 'add' and construct_command[2] in ['command', 'cascade', 'separator']), len(construct_command), 2):
+            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] in ['add'] and construct_command[2] in ['command', 'cascade', 'separator'])-(construct_command[1] in ['current']), len(construct_command), 2):
                 if construct_command[i] != '-menu':
                     additional_options[construct_command[i]] = construct_command[i+1]
                 else: # Sneak PyQT menu instead of TKinter menu.
@@ -232,7 +228,7 @@ class Implementer(QApplication):
                              construct_command[0], additional_options)
             return # TODO Nicer?
 
-        if construct_command[1] in ['configure', 'add', 'insert']: # Add for menu, insert for text
+        if construct_command[1] in ['configure', 'add', 'insert', 'current']: # Add for menu, insert for text, current for combobox
             widget = self.namer[construct_command[0]]
 
             if widget.__class__ == QListWidget: # Inserting to List. TODO: Support orientation
@@ -241,6 +237,11 @@ class Implementer(QApplication):
             if widget.__class__ == QComboBox and '-values' in additional_options:
                 # Translate string of {values} into array with values.
                 additional_options['-values'] = additional_options['-values'][1:].replace('{','')[:-1].split('} ')
+
+            if widget.__class__ in [QTextEdit,QLineEdit] and len(construct_command)>3:
+                additional_options['-text'] = construct_command[3]
+
+            # TODO: QComboBoxCurrent???
 
             # TODO: Separator to menu.
             # Translate additional options # TODO Done here and later
@@ -254,8 +255,6 @@ class Implementer(QApplication):
                if command:
                    action.triggered.connect(self.commands[command])
                widget.addAction(action)
-
-            # TODO: QList also needs combinations.
 
             for key in additional_options.keys():
                self.call_method(widget, key, additional_options[key])
