@@ -27,9 +27,16 @@ HORIZONTAL="Whatever" #TODO
 class StringVar(TkString):
     def __init__(self, master=None, value=None, name=None):
         super(StringVar, self).__init__(master, value, name)
+        self.value = value
 
     def __str__(self):
-        return value
+        return self.value
+
+    def set(self, value):
+        self.value = value
+
+    def get(self):
+        return self.value
 
 # TODO : Just pasted from Tkinter.
 class QtCallWrapper:
