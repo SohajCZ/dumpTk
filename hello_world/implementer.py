@@ -237,7 +237,7 @@ class Implementer(QApplication):
         # Else create class w/wo master. Even when there is master, might not use him.
         if master_id != '':
             # Create widget, some might not need master, let function decide.
-            widget = class_name(master_id)
+            widget = class_name(self.namer[master_id])
             # Insert master to mapping
             self.masters[construct_command[1]] = master_id
         else:
