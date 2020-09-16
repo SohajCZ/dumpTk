@@ -1,5 +1,6 @@
 import qtinter as tk
 
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -19,6 +20,7 @@ class Application(tk.Frame):
 
     def say_hi(self):
         print("hi there, everyone!")
+
 
 root = tk.Tk()
 app = Application(master=root)

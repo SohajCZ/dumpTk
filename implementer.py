@@ -157,8 +157,8 @@ class Implementer(QApplication):
             # This is stringvar ... already made with my StringVar.
             return
 
-        #print("--------------------------")
-        #print("Construct command", construct_command)
+        # print("--------------------------")
+        # print("Construct command", construct_command)
 
         if construct_command == 'destroy':
             self.quit()
