@@ -1,9 +1,11 @@
+import sys
+
 import tktoqt
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, \
-                            QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout, \
-                            QGroupBox, QMainWindow, QMenu, QAction, QSpinBox, QSlider, \
-                            QCheckBox, QRadioButton, QListWidget, QComboBox, QTextEdit
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
+                             QPushButton, QGroupBox, QComboBox, QTextEdit,
+                             QMainWindow, QMenu, QAction, QSpinBox,
+                             QSlider, QCheckBox, QRadioButton, QListWidget)
 
 from layouter import Layouter
 
@@ -28,20 +30,18 @@ translate_class_dict = {
 ttk_dict = {}
 
 for item in translate_class_dict:
-    ttk_dict['ttk::'+item] = translate_class_dict[item] # TODO: Rightful omitment of ttk?
+    # TODO: Rightful omit of ttk?
+    ttk_dict['ttk::'+item] = translate_class_dict[item]
 
 translate_class_dict.update(ttk_dict)
 
-
-# --------------------------------------------
 
 def translate_class(key):
     # TODO Doc
     return translate_class_dict[key]
 
-# --------------------------------------------
 
-class Menu(QMainWindow): # TODO: Rename, naming wrong ...
+class Menu(QMainWindow):  # TODO: Rename, naming wrong ...
 
     def __init__(self):
         super().__init__()
@@ -54,7 +54,7 @@ class Menu(QMainWindow): # TODO: Rename, naming wrong ...
         menubar = self.menuBar()
 
         if self.label != "":
-            menu.setTitle(self.label) # TODO: This might be doing problems. IDK yet.
+            menu.setTitle(self.label)
             self.label = ""
 
         menubar.addMenu(menu)
@@ -65,42 +65,43 @@ class Menu(QMainWindow): # TODO: Rename, naming wrong ...
             print("Warning - need to make queue", file=sys.stderr)
         self.label = label
 
-# --------------------------------------------
 
 class Implementer(QApplication):
     def __init__(self, name):
         super(Implementer, self).__init__([])
-        #: Dict with widgets ids as keys and widget objects as values
-        self.namer = { '.': self, '.!menu': Menu() }
+        #: Dict of widgets ids as keys and widget objects as values
+        self.namer = {'.': self, '.!menu': Menu()}
         self.commands = dict()
         self.window = None
-        #: Dict with widgets ids as keys and their layouts (Layouter instance) as values
-        self.layouter = { '.': Layouter() }
+        #: Dict of widgets ids as keys and their layouts (Layouter) as values
+        self.layouter = {'.': Layouter()}
         self.menu = False
-        #: Dict with widgets ids as keys and their master widgets ids as values
+        #: Dict of widgets ids as keys and their master widgets ids as values
         self.masters = dict()
 
     def add_to_namer(self, key, item):
-        # TODO: Docs. For controll but mainly for forcing own menu. Even when configured at last.
+        # TODO: Docs. For controll but mainly for forcing own menu.
+        #  TODO: Even when configured at last.
         if key not in self.namer:
             self.namer[key] = item
         else:
             if key != '.!menu':
-                print("Warning - duplicated key entry for namer:", key, file=sys.stderr)
+                print("Warning - duplicated key entry for namer:",
+                      key, file=sys.stderr)
 
     def create_menu(self, menu=None):
         # TODO: Docs.
         self.menu = True
 
     def show(self):
-        if not self.window: # TODO Check this part after master layout rework
+        if not self.window:  # TODO Check this part after master layout rework
             self.window = QWidget()
 
         # Some applications might not have layouts.
         if self.layouter['.'].inited:
             self.window.setLayout(self.layouter['.'].layout)
 
-        if self.menu: # Application has menu.
+        if self.menu:  # Application has menu.
             self.namer['.!menu'].setCentralWidget(self.window)
             self.namer['.!menu'].show()
         else:
@@ -108,28 +109,31 @@ class Implementer(QApplication):
 
     def call_method(self, o, name, params):
         # TODO: Doc - "o" is object.; params needs to be translated
-        if '.' in name: # TODO: IDK what else, but . should really not be in name ...
-            func = self.commands.get(params)
-            # TODO: Switch, different file, # TODO: Could connect more observables.
-            if name.split('.')[0] == 'clicked': # QPushButton
-                return o.clicked.connect(func)
-            elif name.split('.')[0] == 'toggled': # QRadioButton
-                return o.toggled.connect(func)
-            elif name.split('.')[0] == 'triggered[QAction]': # TODO Cant get here now
-                return o.triggered[QAction].connect(func)
 
-        try: # TODO: Remove this and support most of attributes
+        # TODO: Prepare combinations.
+        if '.' in name:
+            func = self.commands.get(params)
+            # TODO: Switch, different file
+            # TODO: Could connect more observables.
+            if name.split('.')[0] == 'clicked':  # QPushButton
+                return o.clicked.connect(func)
+            elif name.split('.')[0] == 'toggled':  # QRadioButton
+                return o.toggled.connect(func)
+            # elif name.split('.')[0] == 'triggered[QAction]':
+                # TODO Cant get here now - stays until combinations
+                # return o.triggered[QAction].connect(func)
+
+        try:  # TODO: Remove this and support most of attributes
             return getattr(o, name)(params)
         except KeyError:
             pass
 
     def createcommand(self, cbname, bound_method, reassign_name=None):
-        #print("Assign command: ", cbname, bound_method, reassign_name)
+        # print("Assign command: ", cbname, bound_method, reassign_name)
         if reassign_name:
             self.commands[reassign_name] = bound_method
         else:
             self.commands[cbname] = bound_method
-
 
     def _add_widget(self, widget_id, kind, other_args):
         master_id = self.masters[widget_id]
@@ -148,7 +152,6 @@ class Implementer(QApplication):
         if master_created:
             self.namer[master_id].setLayout(self.layouter[master_id].layout)
 
-
     def call(self, *args):
         construct_command = args[0]
 
@@ -160,71 +163,92 @@ class Implementer(QApplication):
         #print("Construct command", construct_command)
 
         if construct_command == 'destroy':
-            self.quit() # TODO: If destroy, then in args is second parameter,
-                        # which is master of deleted widget.
+            self.quit()
+            # TODO: If destroy, then in args is second parameter,
+            # TODO: which is master of deleted widget.
             return
 
-        if construct_command == 'wm': # TODO 'WM_DELETE_WINDOW'
+        if construct_command == 'wm':  # TODO 'WM_DELETE_WINDOW'
             return
 
         # TODO Omit place (???)
 
-        if type(construct_command) == str: # Adding text to QLineEdit
+        # Adding text to QLineEdit
+        if type(construct_command) == str:
             construct_command = args
 
-	# Parse other additional options
+        # Parse other additional options
         additional_options = dict()
 
-        if len(construct_command)>2:# TODO Next to command and cascade could be menu-checkbox and so on.
-            for i in range(2+(construct_command[0] in ['pack', 'grid'])+(construct_command[1] in ['add'] and construct_command[2] in ['command', 'cascade', 'separator'])-(construct_command[1] in ['current']), len(construct_command), 2):
+        if len(construct_command) > 2:
+            # TODO: Calculate range from line by line
+            for i in range(
+                    2 +
+                    (construct_command[0] in ['pack', 'grid']) +
+                    (construct_command[1] in ['add'] and construct_command[2]
+                        in ['command', 'cascade', 'separator']) -
+                    (construct_command[1] in ['current']),
+                    len(construct_command), 2):
                 if construct_command[i] != '-menu':
-                    additional_options[construct_command[i]] = construct_command[i+1]
-                else: # Sneak PyQT menu instead of TKinter menu.
-                    additional_options[construct_command[i]] = self.namer[str(construct_command[i+1])]
+                    additional_options[construct_command[i]] = \
+                        construct_command[i+1]
+                else:  # Sneak PyQT menu instead of TKinter menu.
+                    additional_options[construct_command[i]] = \
+                        self.namer[str(construct_command[i+1])]
 
         # If packing insert widget
         if construct_command[0] in ['pack', 'grid']:
             self._add_widget(construct_command[2],
                              construct_command[0], additional_options)
-            return # TODO Nicer?
+            return  # TODO Nicer?
 
-        if construct_command[1] in ['configure', 'add', 'insert', 'current']: # Add for menu, insert for text, current for combobox
+        # Add for menu, insert for text, current for combobox
+        if construct_command[1] in ['configure', 'add', 'insert', 'current']:
             widget = self.namer[construct_command[0]]
 
-            if widget.__class__ == QListWidget: # Inserting to List. TODO: Support orientation
-                additional_options['-insert'] = construct_command[3] # TODO: Others? Remove?
+            # Inserting to List. # TODO Combinations
+            if widget.__class__ == QListWidget:
+                additional_options['-insert'] = construct_command[3]
+                # TODO: Others? Remove?
+                # TODO: Support orientation
 
-            if widget.__class__ == QComboBox and '-values' in additional_options:
+            if (widget.__class__ == QComboBox and
+                    '-values' in additional_options):
                 # Translate string of {values} into array with values.
-                additional_options['-values'] = additional_options['-values'][1:].replace('{','')[:-1].split('} ')
+                additional_options['-values'] = additional_options[
+                    '-values'][1:].replace('{', '')[:-1].split('} ')
 
-            if widget.__class__ in [QTextEdit,QLineEdit] and len(construct_command)>3:
+            if (widget.__class__ in [QTextEdit, QLineEdit] and
+                    len(construct_command) > 3):
                 additional_options['-text'] = construct_command[3]
 
             # TODO: QComboBoxCurrent???
 
             # TODO: Separator to menu.
             # Translate additional options # TODO Done here and later
-            additional_options = tktoqt.translate_parameters_for_class(widget.__class__, additional_options)
+            additional_options = tktoqt.translate_parameters_for_class(
+                widget.__class__, additional_options)
 
-            if widget.__class__ == QMenu: # It is menu. Needs combinations. Maybe more. TODO
-               # TODO Check if labels
-               label = additional_options.pop('addAction', None)
-               command = additional_options.pop('triggered[QAction].connect', None)
-               action = QAction(label, widget)
-               if command:
-                   action.triggered.connect(self.commands[command])
-               widget.addAction(action)
+            if widget.__class__ == QMenu:  # TODO Combinations
+                # TODO Check if labels
+                label = additional_options.pop('addAction', None)
+                command = additional_options.pop(
+                    'triggered[QAction].connect', None)
+                action = QAction(label, widget)
+                if command:
+                    action.triggered.connect(self.commands[command])
+                widget.addAction(action)
 
             for key in additional_options.keys():
-               self.call_method(widget, key, additional_options[key])
+                self.call_method(widget, key, additional_options[key])
 
-            return # TODO Make it nicer
+            return  # TODO Make it nicer
 
         class_name = translate_class(construct_command[0])
 
         # Translate additional options # TODO Done here and later
-        additional_options = tktoqt.translate_parameters_for_class(class_name, additional_options)
+        additional_options = tktoqt.translate_parameters_for_class(
+            class_name, additional_options)
 
         # Save master for future use.
         master_id = construct_command[1][:construct_command[1].rfind('.!')]
@@ -234,7 +258,7 @@ class Implementer(QApplication):
             widget = class_name()
             self.window = widget
 
-        # Else create class w/wo master. Even when there is master, might not use him.
+        # Else create class w/wo master.
         if master_id != '':
             # Create widget, some might not need master, let function decide.
             widget = class_name(self.namer[master_id])
@@ -243,16 +267,13 @@ class Implementer(QApplication):
         else:
             self.masters[construct_command[1]] = '.'
             widget = class_name()
-                
+
         for key in additional_options.keys():
             self.call_method(widget, key, additional_options[key])
 
         self.add_to_namer(construct_command[1], widget)
 
-
     def mainloop(self, *args):
         import sys
         self.show()
         sys.exit(self.exec_())
-
-

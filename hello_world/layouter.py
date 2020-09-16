@@ -4,20 +4,20 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
 PACK = "pack"
 GRID = "grid"
 
-TOP="top"
-RIGHT="right"
-BOTTOM="bottom"
-LEFT="left"
+TOP = "top"
+RIGHT = "right"
+BOTTOM = "bottom"
+LEFT = "left"
 
 
 class MixedLayouts(Exception):
     pass
 
 
-class Layouter: # TODO Pack / Grid polymorfism.
+class Layouter:  # TODO Pack / Grid polymorfism.
 
     def __init__(self, kind=None):
-        self.kind=None
+        self.kind = None
         self.layout = None
         self.top = None
         self.bottom = None
@@ -26,11 +26,11 @@ class Layouter: # TODO Pack / Grid polymorfism.
 
         self.inited = False
 
-        if kind is None: # TODO: I might need to not have it really inited?
+        if kind is None:  # TODO: I might need to not have it really inited?
             return
 
         self._manual_init(kind)
-        
+
     def _manual_init(self, kind, other_args={}):
         self.kind = kind
 
@@ -57,7 +57,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
         self.right.setDirection(QBoxLayout.RightToLeft)
 
         if side == LEFT:
-             # Init top level layout
+            # Init top level layout
             self.layout = QHBoxLayout()
 
             # Init middle column layout and add vertical layouts
@@ -69,7 +69,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
             self.layout.addLayout(self.left)
             self.layout.addLayout(self.column_layout)
             self.layout.addLayout(self.right)
-        else: # TODO: Support only left and top? Gonna say this means top.
+        else:  # TODO: Support only left and top? Gonna say this means top.
             # Init top level layout
             self.layout = QVBoxLayout()
 
@@ -84,9 +84,7 @@ class Layouter: # TODO Pack / Grid polymorfism.
             self.layout.addLayout(self.bottom)
 
     def _init_grid(self, other_args={}):
-        row = other_args.get('-row', 0)
-        column = other_args.get('-column', 0)
-
+        # TODO: Work with other_args
         self.layout = QGridLayout()
 
     def _get_layout_for_side(self, side=TOP):
@@ -130,8 +128,3 @@ class Layouter: # TODO Pack / Grid polymorfism.
         elif kind == GRID:
             self.grid_widget(widget, other_args)
         # TODO Else? (place)
-        
-
-        
-            
-
