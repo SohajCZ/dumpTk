@@ -9,8 +9,6 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
 
 from layouter import Layouter
 
-# --------------------------------------------
-
 translate_class_dict = {
     'frame': QWidget,
     'button': QPushButton,
