@@ -111,12 +111,8 @@ class Implementer(QApplication):
         # TODO: Prepare combinations.
         if '.' in name:
             func = self.commands.get(params)
-            # TODO: Switch, different file
-            # TODO: Could connect more observables.
-            if name.split('.')[0] == 'clicked':  # QPushButton
-                return o.clicked.connect(func)
-            elif name.split('.')[0] == 'toggled':  # QRadioButton
-                return o.toggled.connect(func)
+            return getattr(o, name.split('.')[0]).connect(func)
+
             # elif name.split('.')[0] == 'triggered[QAction]':
                 # TODO Cant get here now - stays until combinations
                 # return o.triggered[QAction].connect(func)
