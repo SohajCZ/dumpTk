@@ -1,0 +1,214 @@
+autocomplete_w.py:from tkinter import *
+autocomplete_w.py:from tkinter.ttk import Frame, Scrollbar
+browser.py:        "Create browser tkinter widgets, including the tree."
+calltip_w.py:from tkinter import Label, LEFT, SOLID, TclError
+calltip_w.py:    """A call-tip widget for tkinter text widgets."""
+calltip_w.py:    from tkinter import Toplevel, Text, LEFT, BOTH
+codecontext.py:import tkinter
+codecontext.py:from tkinter.constants import NSEW, SUNKEN
+codecontext.py:            except tkinter.TclError:
+codecontext.py:            self.context = tkinter.Text(
+codecontext.py:            self.cell00 = tkinter.Frame(self.editwin.text_frame,
+colorizer.py:    from tkinter import Toplevel, Text
+configdialog.py:from tkinter import (Toplevel, Listbox, Text, Scale, Canvas,
+configdialog.py:from tkinter.ttk import (Frame, LabelFrame, Button, Checkbutton, Entry, Label,
+configdialog.py:import tkinter.colorchooser as tkColorChooser
+configdialog.py:import tkinter.font as tkFont
+configdialog.py:from tkinter import messagebox
+configdialog.py:#         # Define tk vars and register var and callback with tracers.
+configdialog.py:#         # For each tk var that needs other than default callback.
+configdialog.py:        idleConf entries and tk.
+configdialog.py:        from tk. Setup fontlist and set font_name.  Setup sizelist,
+configdialog.py:        font_weight = tkFont.BOLD if self.font_bold.get() else tkFont.NORMAL
+configdialog.py:        Function load_theme_cfg() initializes tk variables and theme
+configdialog.py:        rgbTuplet, color_string = tkColorChooser.askcolor(
+configdialog.py:        Function load_key_cfg() initializes tk variables and keyset
+configdialog.py:        load_general_cfg initializes tk variables and helplist using
+config_key.py:from tkinter import Toplevel, Listbox, Text, StringVar, TclError
+config_key.py:from tkinter.ttk import Frame, Button, Checkbutton, Entry, Label, Scrollbar
+config_key.py:from tkinter import messagebox
+config.py:from tkinter.font import Font
+config.py:        tkinter color strings for configuring backgrounds and tags.
+config.py:        to tkinter.Font
+debugger.py:from tkinter import *
+debugger.py:from tkinter.ttk import Frame, Scrollbar
+debugobj.py:    from tkinter import Toplevel
+dynoption.py:from tkinter import OptionMenu, _setit, StringVar, Button
+dynoption.py:    from tkinter import Toplevel # + StringVar, Button
+editor.py:from tkinter import *
+editor.py:from tkinter.font import Font
+editor.py:from tkinter.ttk import Scrollbar
+editor.py:import tkinter.simpledialog as tkSimpleDialog
+editor.py:import tkinter.messagebox as tkMessageBox
+editor.py:        self.askyesno = tkMessageBox.askyesno
+editor.py:        self.askinteger = tkSimpleDialog.askinteger
+editor.py:        self.showerror = tkMessageBox.showerror
+editor.py:                tkMessageBox.showerror(title='Document Start Failure',
+editor.py:        lineno = tkSimpleDialog.askinteger("Goto",
+editor.py:                    tkMessageBox.showerror(title='Document Start Failure',
+editor.py:                    tkMessageBox.showwarning(title='IDLE Warning',
+editor.py:    tk = root.tk
+editor.py:    tk.call('tcl_wordBreakAfter', 'a b', 0) # make sure word.tcl is loaded
+editor.py:    tk.call('set', 'tcl_wordchars', r'\w')
+editor.py:    tk.call('set', 'tcl_nonwordchars', r'\W')
+filelist.py:from tkinter import messagebox as tkMessageBox
+filelist.py:            tkMessageBox.showerror(
+filelist.py:            tkMessageBox.showerror(
+filelist.py:    from tkinter import Tk
+format.py:from tkinter.messagebox import askyesno
+format.py:from tkinter.simpledialog import askinteger
+format.py:            # Because tk indexes are slice indexes and never raise,
+grep.py:from tkinter import StringVar, BooleanVar
+grep.py:from tkinter.ttk import Checkbutton  # Frame imported in ...Base
+grep.py:    from tkinter import Toplevel, Text, SEL, END
+grep.py:    from tkinter.ttk import Frame, Button
+help_about.py:from tkinter import Toplevel, Frame, Label, Button, PhotoImage
+help_about.py:from tkinter import SUNKEN, TOP, BOTTOM, LEFT, X, BOTH, W, EW, NSEW, E
+help_about.py:        """Create popup, do not return until tk widget destroyed.
+help_about.py:        tk_patchlevel = self.tk.call('info', 'patchlevel')
+help_about.py:        ext = '.png' if tk_patchlevel >= '8.6' else '.gif'
+help_about.py:        tkver = Label(frame_background, text='Tk version:  ' + tk_patchlevel,
+help_about.py:        tkver.grid(row=9, column=1, sticky=W, padx=2, pady=0)
+help.py:HelpParser - Parse help.html and render to tk Text.
+help.py:from tkinter import Toplevel, Frame, Text, Menu
+help.py:from tkinter.ttk import Menubutton, Scrollbar
+help.py:from tkinter import font as tkfont
+help.py:            if name.lower() in (x.lower() for x in tkfont.names(root=self)):
+help.py:                font = tkfont.Font(name=name, exists=True, root=self)
+help.py:                                  for x in tkfont.families(root=self)):
+history.py:        .text - Idle wrapper of tk Text widget, with .bell().
+iomenu.py:import tkinter.filedialog as tkFileDialog
+iomenu.py:import tkinter.messagebox as tkMessageBox
+iomenu.py:from tkinter.simpledialog import askstring
+iomenu.py:            tkMessageBox.showerror("I/O Error", str(msg), parent=self.text)
+iomenu.py:            tkMessageBox.showerror("Decoding Error",
+iomenu.py:            tkMessageBox.showerror(
+iomenu.py:        confirm = tkMessageBox.askyesnocancel(
+iomenu.py:            tkMessageBox.showerror("I/O Error", str(msg),
+iomenu.py:        tkMessageBox.showerror(
+iomenu.py:        confirm = tkMessageBox.askokcancel(
+iomenu.py:                tkMessageBox.showerror("Print status", output, parent=self.text)
+iomenu.py:            tkMessageBox.showinfo("Print status", message, parent=self.text)
+iomenu.py:            self.opendialog = tkFileDialog.Open(parent=self.text,
+iomenu.py:            self.savedialog = tkFileDialog.SaveAs(
+iomenu.py:    from tkinter import Toplevel, Text
+macosx.py:import tkinter
+macosx.py:        root = tkinter.Tk()
+macosx.py:def tkVersionWarning(root):
+macosx.py:    except tkinter.TclError:
+macosx.py:    from tkinter import Menu
+multicall.py:import tkinter
+multicall.py:            except tkinter.TclError as e:
+multicall.py:            except tkinter.TclError as e:
+multicall.py:        assert issubclass(widget, tkinter.Misc)
+multicall.py:                        except tkinter.TclError as e:
+multicall.py:    top = tkinter.Toplevel(parent)
+outwin.py:from tkinter import messagebox
+percolator.py:    import tkinter as tk
+percolator.py:    box = tk.Toplevel(parent)
+percolator.py:    text = tk.Text(box)
+percolator.py:    var1 = tk.IntVar(parent)
+percolator.py:    cb1 = tk.Checkbutton(box, text="Tracer1", command=toggle1, variable=var1)
+percolator.py:    var2 = tk.IntVar(parent)
+percolator.py:    cb2 = tk.Checkbutton(box, text="Tracer2", command=toggle2, variable=var2)
+pyshell.py:    from tkinter import *
+pyshell.py:import tkinter.messagebox as tkMessageBox
+pyshell.py:    tkMessageBox.showerror("Idle Cannot Start",
+pyshell.py:                tkMessageBox.showerror(title='IDLE Error',
+pyshell.py:    def __init__(self, tkconsole):
+pyshell.py:        self.tkconsole = tkconsole
+pyshell.py:        tkconsole = self.tkconsole
+pyshell.py:        text = tkconsole.text
+pyshell.py:        tkconsole.colorize_syntax_error(text, pos)
+pyshell.py:        tkconsole.resetoutput()
+pyshell.py:        tkconsole.showprompt()
+pyshell.py:                if tkMessageBox.askyesno(
+pyshell.py:        tkMessageBox.showerror(
+pyshell.py:        tkMessageBox.showerror(
+pyshell.py:        tkMessageBox.showerror(
+pyshell.py:            tkMessageBox.showerror("Don't debug now",
+pyshell.py:            response = tkMessageBox.askokcancel(
+pyshell.py:        import tkinter
+pyshell.py:        tkinter._default_root = None # 03Jan04 KBK What's this?
+pyshell.py:            tkMessageBox.showerror("No stack trace",
+pyshell.py:        tkversionwarning = macosx.tkVersionWarning(root)
+pyshell.py:        if tkversionwarning:
+query.py:from tkinter import Toplevel, StringVar, BooleanVar, W, E, S
+query.py:from tkinter.ttk import Frame, Button, Entry, Label, Checkbutton
+query.py:from tkinter import filedialog
+query.py:from tkinter.font import Font
+query.py:        '''If entry is valid, bind it to 'result' and destroy tk widget.
+query.py:        "Set dialog result to None and destroy tk widget."
+redirector.py:from tkinter import TclError
+redirector.py:    Some Tk operations don't normally pass through tkinter.  For example, if a
+redirector.py:    processes the insert without calling back into tkinter.
+redirector.py:    Although a binding to <Key> could be made via tkinter, what we really want
+redirector.py:    operation.  We will also intercept method calls on the tkinter class
+redirector.py:    instance that represents the tk widget.
+redirector.py:        tk: widget.tk, a convenience attribute, probably not needed.
+redirector.py:        self.tk = tk = widget.tk        # widget's root
+redirector.py:        tk.call("rename", w, self.orig)
+redirector.py:        tk.createcommand(w, self.dispatch)
+redirector.py:        tk = widget.tk
+redirector.py:        tk.deletecommand(w)
+redirector.py:        tk.call("rename", self.orig, w)
+redirector.py:        It also adds a widget function attribute that masks the tkinter
+redirector.py:    '''Callable for original tk command that has been redirected.
+redirector.py:    from tkinter import Toplevel, Text
+replace.py:from tkinter import StringVar, TclError
+replace.py:    from tkinter import Toplevel, Text, END, SEL
+replace.py:    from tkinter.ttk import Frame, Button
+run.py:import tkinter  # Use tcl and, if startup fails, messagebox.
+run.py:    # Undo modifications of tkinter by idlelib imports; see bpo-25507.
+run.py:tcl = tkinter.Tcl()
+run.py:    """Process any tk events that are ready to be dispatched if tkinter
+run.py:    has been imported, a tcl interpreter has been created and tk has been
+run.py:    import tkinter
+run.py:    from tkinter.messagebox import showerror
+run.py:    root = tkinter.Tk()
+run.py:    import tkinter.font
+run.py:        for name in tkinter.font.names(root):
+run.py:            font = tkinter.font.Font(root=root, name=name, exists=True)
+runscript.py:import tkinter.messagebox as tkMessageBox
+runscript.py:        confirm = tkMessageBox.askokcancel(title="Save Before Run or Check",
+runscript.py:        tkMessageBox.showerror(title, message, parent=self.editwin.text)
+scrolledlist.py:from tkinter import *
+scrolledlist.py:from tkinter.ttk import Frame, Scrollbar
+searchbase.py:from tkinter import Toplevel
+searchbase.py:from tkinter.ttk import Frame, Entry, Label, Button, Checkbutton, Radiobutton
+searchengine.py:from tkinter import StringVar, BooleanVar, TclError
+searchengine.py:import tkinter.messagebox as tkMessageBox
+searchengine.py:        tkMessageBox.showerror("Regular expression error",
+search.py:from tkinter import TclError
+search.py:    from tkinter import Toplevel, Text
+search.py:    from tkinter.ttk import Frame, Button
+sidebar.py:import tkinter as tk
+sidebar.py:        self.sidebar_text = tk.Text(self.parent, width=1, wrap=tk.NONE,
+sidebar.py:    toplevel = tk.Toplevel(parent)
+sidebar.py:    text_frame = tk.Frame(toplevel)
+sidebar.py:    text = tk.Text(text_frame, width=80, height=24, wrap=tk.NONE, font=font)
+sidebar.py:    editwin.vbar = tk.Scrollbar(text_frame)
+squeezer.py:import tkinter as tk
+squeezer.py:import tkinter.messagebox as tkMessageBox
+squeezer.py:        tk.Button.__init__(self, text, text=button_text,
+squeezer.py:            confirm = tkMessageBox.askokcancel(
+squeezer.py:        rmenu = tk.Menu(self.text, tearoff=0)
+squeezer.py:            text.mark_gravity("iomark", tk.RIGHT)
+squeezer.py:            text.mark_gravity("iomark", tk.LEFT)
+squeezer.py:        start, end = self.text.tag_prevrange(tag_name, tk.INSERT + "+1c")
+stackviewer.py:import tkinter as tk
+stackviewer.py:        top = tk.Toplevel(root)
+stackviewer.py:    top = tk.Toplevel(parent)
+statusbar.py:from tkinter import Frame, Label
+statusbar.py:    from tkinter import Toplevel, Frame, Text, Button
+textview.py:from tkinter import Toplevel, Text, TclError,\
+textview.py:from tkinter.ttk import Frame, Scrollbar, Button
+textview.py:from tkinter.messagebox import showerror
+tooltip.py:from tkinter import *
+tree.py:from tkinter import *
+tree.py:from tkinter.ttk import Frame, Scrollbar
+undo.py:# tkinter import not needed because module does not create widgets,
+undo.py:    from tkinter import Toplevel, Text, Button
+window.py:from tkinter import Toplevel, TclError
+zoomheight.py:import tkinter
+zoomheight.py:            except tkinter.TclError:
