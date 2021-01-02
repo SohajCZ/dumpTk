@@ -81,10 +81,8 @@ def get_parameters_values_mapping(class_name):
 
 def _get_mapping(class_name, mapping):
     # TODO Docs.
-    output = mapping["all"]
+    output = mapping["all"].copy()
     override_and_extra_parameters = mapping.get(class_name.__name__, {})
-
     for key in override_and_extra_parameters:
         output[key] = override_and_extra_parameters[key]
-
     return output
