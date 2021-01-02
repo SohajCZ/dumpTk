@@ -1,6 +1,6 @@
 import sys
 
-from parameters_mapping import (get_parameters_values_mapping,
+from .parameters_mapping import (get_parameters_values_mapping,
                                 get_parameters_names_mapping)
 
 

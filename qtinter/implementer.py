@@ -1,13 +1,12 @@
 import sys
 
-import tktoqt
-
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QPushButton, QGroupBox, QComboBox, QTextEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
                              QSlider, QCheckBox, QRadioButton, QListWidget)
 
-from layouter import Layouter
+from .tktoqt import translate_parameters_for_class
+from .layouter import Layouter
 
 translate_class_dict = {
     'frame': QWidget,
@@ -220,7 +219,7 @@ class Implementer(QApplication):
 
             # TODO: Separator to menu.
             # Translate additional options # TODO Done here and later
-            additional_options = tktoqt.translate_parameters_for_class(
+            additional_options = translate_parameters_for_class(
                 widget.__class__, additional_options)
 
             if widget.__class__ == QMenu:  # TODO Combinations
@@ -241,7 +240,7 @@ class Implementer(QApplication):
         class_name = translate_class(construct_command[0])
 
         # Translate additional options # TODO Done here and later
-        additional_options = tktoqt.translate_parameters_for_class(
+        additional_options = translate_parameters_for_class(
             class_name, additional_options)
 
         # Save master for future use.

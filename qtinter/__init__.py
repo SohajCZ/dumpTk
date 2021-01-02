@@ -9,7 +9,7 @@ from tkinter import Tk as BaseTk
 from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,
                      YES, RIDGE, E, W, N, S, END, HORIZONTAL)
 
-from implementer import Implementer, QAction  # TODO Ok import?
+from .implementer import Implementer, QAction  # TODO Ok import?
 
 
 class StringVar(TkString):
