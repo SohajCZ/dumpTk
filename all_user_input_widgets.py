@@ -2,7 +2,7 @@
 
 import qtinter as tk
 import qtinter as ttk
-import qtfiledialog as filedialog
+from qtinter import filedialog
 
 
 class Counter_program():

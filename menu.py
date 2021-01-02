@@ -1,5 +1,5 @@
 from qtinter import Tk, Menu, Frame
-import qtfiledialog as filedialog
+from qtinter import filedialog
 
 class Window(Frame):
     def __init__(self, master=None):

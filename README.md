@@ -15,7 +15,7 @@ There is `requirements.txt` provided by `pip freeze` for instalation of your vir
   - Change `import tkinter as tk` to `import qtinter as tk`
   - Change `from tkinter import *` to `from qtinter import *`
   - Change `from tkinter import ttk` to `from qtinter import ttk`
-  - Change `from tkinter.filedialog import filedialog` to `import qtfiledialog as filedialog` (yes, this needs submodule to work the same way)
+  - Change `from tkinter import filedialog` to `from qtinter as filedialog`
 
 ## Currenct version main files
 - *qtinter.py* - Main file with `Tk` class which inherits from original `Tk` tkinter class. Each call is wrapped by `TkWrapeer` and sent to the `Implementer`.
