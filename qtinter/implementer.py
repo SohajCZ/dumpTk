@@ -3,7 +3,9 @@ import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QPushButton, QGroupBox, QComboBox, QTextEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
-                             QSlider, QCheckBox, QRadioButton, QListWidget)
+                             QSlider, QCheckBox, QRadioButton, QListWidget,
+                             QScrollArea, QScrollBar)
+from PyQt5.QtGui import QPixmap
 
 from .tktoqt import translate_parameters_for_class
 from .layouter import Layouter
@@ -22,6 +24,9 @@ translate_class_dict = {
     'radiobutton': QRadioButton,
     'listbox': QListWidget,
     'combobox': QComboBox,
+    'photo': QPixmap,
+    'toplevel': QMainWindow, # TODO Is this legal? => Test via IDLE
+    'scrollbar': QScrollBar,
 }
 
 ttk_dict = {}
@@ -170,6 +175,10 @@ class Implementer(QApplication):
         if type(construct_command) == str:
             construct_command = args
 
+        # TODO: Really needed like this? IDK yet
+        if construct_command[0] == 'image':
+            construct_command = construct_command[2:]
+
         # Parse other additional options
         additional_options = dict()
 
@@ -179,10 +188,14 @@ class Implementer(QApplication):
                     2 +
                     (construct_command[0] in ['pack', 'grid']) +
                     (construct_command[1] in ['add'] and construct_command[2]
-                        in ['command', 'cascade', 'separator']) -
-                    (construct_command[1] in ['current']),
+                        in ['command', 'cascade', 'separator', 'checkbutton']) -
+                    (construct_command[1] in ['current', 'rowconfigure', 'mark',
+                                              'columnconfigure','entryconfigure']),
                     len(construct_command), 2):
                 if construct_command[i] != '-menu':
+                    if i+1 >= len(construct_command) and construct_command[1] == 'insert':
+                        print("There are 2 different commands with same format.")
+                        break
                     additional_options[construct_command[i]] = \
                         construct_command[i+1]
                 else:  # Sneak PyQT menu instead of TKinter menu.
@@ -196,7 +209,9 @@ class Implementer(QApplication):
             return  # TODO Nicer?
 
         # Add for menu, insert for text, current for combobox
-        if construct_command[1] in ['configure', 'add', 'insert', 'current']:
+        if construct_command[1] in ['configure', 'add', 'insert', 'current',
+                                    'tag', 'entryconfigure']:
+                        # TODO: Why tag, entryconfigure
             widget = self.namer[construct_command[0]]
 
             # Inserting to List. # TODO Combinations
@@ -227,7 +242,13 @@ class Implementer(QApplication):
                 label = additional_options.pop('addAction', None)
                 command = additional_options.pop(
                     'triggered[QAction].connect', None)
-                action = QAction(label, widget)
+                accelerator = additional_options.pop(
+                    '-accelerator', None)
+                checkable = construct_command[2] == 'checkbutton'
+                if accelerator:
+                    action = QAction(label, widget, accelerator, checkable=checkable)
+                else:
+                    action = QAction(label, widget)
                 if command:
                     action.triggered.connect(self.commands[command])
                 widget.addAction(action)
@@ -247,12 +268,15 @@ class Implementer(QApplication):
         master_id = construct_command[1][:construct_command[1].rfind('.!')]
 
         # If there is no window created, take first window as main.
-        if class_name in [QWidget, QGroupBox] and self.window is None:
+        if class_name in [QWidget, QGroupBox, QMainWindow] and self.window is None:
             widget = class_name()
             self.window = widget
 
         # Else create class w/wo master.
-        if master_id != '':
+        if class_name in [QPixmap]:
+            self.masters[construct_command[1]] = None
+            widget = class_name()
+        elif master_id != '':
             # Create widget, some might not need master, let function decide.
             widget = class_name(self.namer[master_id])
             # Insert master to mapping

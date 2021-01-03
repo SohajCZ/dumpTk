@@ -46,6 +46,10 @@ parameters_names_mapping = {  # TODO All
         '-values': 'addItems',
         # TODO finish StringVar'-textvariable': 'setText',
     },
+    "QPixmap": {
+        '-file': 'load',
+        # TODO finish StringVar'-textvariable': 'setText',
+    },
     "Menu": {  # TODO: Might change name
         '-menu':  'add_menu',  # My own function
         '-label': 'remember_label',
