@@ -14,6 +14,9 @@ class Counter_program():
         self.radio_variable = tk.StringVar()
         self.combobox_value = tk.StringVar()
 
+    def destroy_via_event(self, event):
+        self.window.destroy()
+
     def create_widgets(self):
         # Create some room around all the internal frames
         self.window['padx'] = 5
@@ -145,7 +148,7 @@ class Counter_program():
         my_combobox.grid(row=2, column=2)
         my_combobox['values'] = ("Choice one", "Choice two",
                                  "Choice three", "Choice four")
-        my_combobox.current(0)
+        my_combobox.current(2)
 
         # - - - - - - - - - - - - - - - - - - - - -
         # Menus
@@ -168,6 +171,13 @@ class Counter_program():
         quit_button = ttk.Button(self.window,
                                  text="Quit", command=self.window.destroy)
         quit_button.grid(row=1, column=3)
+
+        # No click - Quit button
+        no_click_quit_button = ttk.Button(self.window,
+                                 text="No click - Quit", command=self.window.destroy)
+        no_click_quit_button.grid(row=2, column=3)
+
+        no_click_quit_button.bind("<Enter>", self.destroy_via_event)
 
 
 # Create the entire GUI program

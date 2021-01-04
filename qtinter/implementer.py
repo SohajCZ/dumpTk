@@ -166,12 +166,13 @@ class Implementer(QApplication):
             # TODO: which is master of deleted widget.
             return
 
-        if construct_command == 'wm':  # TODO 'WM_DELETE_WINDOW'
+        if construct_command in ['wm', 'bind']:  # TODO 'WM_DELETE_WINDOW'
+            print(args)
             return
 
         # TODO Omit place (???)
 
-        # Adding text to QLineEdit
+        # Adding text to QLineEdit # TODO This is "other arg bs"
         if type(construct_command) == str:
             construct_command = args
 
@@ -201,6 +202,12 @@ class Implementer(QApplication):
                 else:  # Sneak PyQT menu instead of TKinter menu.
                     additional_options[construct_command[i]] = \
                         self.namer[str(construct_command[i+1])]
+
+        # If packing insert widget
+        if construct_command[0] in ['bind']:
+            print(args)
+            print("Binding to be implemented.") # TODO
+            return
 
         # If packing insert widget
         if construct_command[0] in ['pack', 'grid']:
