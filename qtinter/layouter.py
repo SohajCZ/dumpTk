@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
 
+from .translate_qt_core import translate_align
+
 # TODO: Enums?
 PACK = "pack"
 GRID = "grid"
@@ -23,6 +25,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         self.bottom = None
         self.left = None
         self.right = None
+        self.widget_found = False # Ending recursion faster...
 
         self.inited = False
 
@@ -45,6 +48,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
     def _init_pack(self, other_args={}):
         side = other_args.get('-side', TOP)
         # TODO: Docs
+        # TODO: Work with other_args
 
         # Init vertical layouts
         self.top = QVBoxLayout()
@@ -105,12 +109,44 @@ class Layouter:  # TODO Pack / Grid polymorfism.
 
         self._get_layout_for_side(side).addWidget(widget)
 
-    def grid_widget(self, widget, other_args):
-        row = other_args.get('-row', 0)
-        column = other_args.get('-column', 0)
-        # TODO: Other args
+    def grid_find_widget(self, layout, widget):
+        if self.widget_found:
+            return None, -1
 
-        self.layout.addWidget(widget, row, column)
+        # There is no better way then recursion?!
+        idx = layout.indexOf(widget)
+        if idx == -1:
+            for children in layout.children():
+                self.grid_find_widget(self, widget, children)
+
+            return None, -1
+
+        return layout, idx
+
+    def grid_widget(self, widget, other_args):
+        widget_found = False
+        row, column = 0, 0
+        rows, cols = 1, 1
+
+        layout, found_index = self.grid_find_widget(self.layout, widget)
+        if found_index != -1:
+            row, column, rows, cols = layout.getItemPosition(found_index)
+            print(row, column, rows, cols)
+
+        row_new = other_args.get('-row', row)
+        column_new = other_args.get('-column', column)
+        rows_new = other_args.get('-rowspan', rows)
+        columns_new = other_args.get('-columnspan', cols)
+
+        if '-sticky' not in other_args and found_index != -1:
+            self.layout.addWidget(widget, row_new, column_new,
+                                  rows_new, columns_new)
+        else:
+            sticky = translate_align(other_args.get('-sticky', ''))
+            self.layout.addWidget(widget, row_new, column_new,
+                                  rows_new, columns_new, alignment=sticky)
+
+        return
 
     def add_widget(self, widget, kind="pack", other_args={}):
         # TODO: Docs.

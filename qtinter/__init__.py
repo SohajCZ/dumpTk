@@ -7,7 +7,8 @@ from tkinter.ttk import (Combobox)
 from tkinter import StringVar as TkString
 from tkinter import Tk as BaseTk
 from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,
-                     YES, RIDGE, E, W, N, S, END, HORIZONTAL)
+                     YES, RIDGE, E, W, N, S, NW, NE, SW, SE,
+                     END, HORIZONTAL)
 
 from .implementer import Implementer, QAction  # TODO Ok import?
 
