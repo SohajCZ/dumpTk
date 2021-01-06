@@ -25,7 +25,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         self.bottom = None
         self.left = None
         self.right = None
-        self.widget_found = False # Ending recursion faster...
+        self.widget_found = False  # Ending recursion faster...
 
         self.inited = False
 
@@ -124,7 +124,6 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         return layout, idx
 
     def grid_widget(self, widget, other_args):
-        widget_found = False
         row, column = 0, 0
         rows, cols = 1, 1
 

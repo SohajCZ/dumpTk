@@ -1,14 +1,14 @@
 # TODO: This could be how much I want to support tkinter
-from tkinter import (Frame, Button, LabelFrame, Label, Entry,
-                     Radiobutton, Text, Menu, Spinbox, Scale,
-                     Listbox, Checkbutton)
-from tkinter.ttk import (Combobox)
+from tkinter import (Frame, Button, LabelFrame, Label, Entry,  # noqa
+                     Radiobutton, Text, Menu, Spinbox, Scale,  # noqa
+                     Listbox, Checkbutton)  # noqa
+from tkinter.ttk import (Combobox)  # noqa
 # TODO Comment why - want to handle this myself.
 from tkinter import StringVar as TkString
 from tkinter import Tk as BaseTk
-from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,
-                     YES, RIDGE, E, W, N, S, NW, NE, SW, SE,
-                     END, HORIZONTAL)
+from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,  # noqa
+                     YES, RIDGE, E, W, N, S, NW, NE, SW, SE,  # noqa
+                     END, HORIZONTAL) # noqa
 
 from .implementer import Implementer, QAction  # TODO Ok import?
 

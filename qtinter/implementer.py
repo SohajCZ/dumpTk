@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QPushButton, QGroupBox, QComboBox, QTextEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
                              QSlider, QCheckBox, QRadioButton, QListWidget,
-                             QScrollArea, QScrollBar)
+                             QScrollBar)
 from PyQt5.QtGui import QPixmap
 
 from .tktoqt import translate_parameters_for_class
@@ -25,7 +25,7 @@ translate_class_dict = {
     'listbox': QListWidget,
     'combobox': QComboBox,
     'photo': QPixmap,
-    'toplevel': QMainWindow, # TODO Is this legal? => Test via IDLE
+    'toplevel': QMainWindow,  # TODO Is this legal? => Test via IDLE
     'scrollbar': QScrollBar,
 }
 
@@ -117,9 +117,9 @@ class Implementer(QApplication):
             func = self.commands.get(params)
             return getattr(o, name.split('.')[0]).connect(func)
 
-            # elif name.split('.')[0] == 'triggered[QAction]':
-                # TODO Cant get here now - stays until combinations
-                # return o.triggered[QAction].connect(func)
+        # elif name.split('.')[0] == 'triggered[QAction]':
+            # TODO Cant get here now - stays until combinations
+            # return o.triggered[QAction].connect(func)
 
         try:  # TODO: Remove this and support most of attributes
             return getattr(o, name)(params)
@@ -189,13 +189,17 @@ class Implementer(QApplication):
                     2 +
                     (construct_command[0] in ['pack', 'grid']) +
                     (construct_command[1] in ['add'] and construct_command[2]
-                        in ['command', 'cascade', 'separator', 'checkbutton']) -
-                    (construct_command[1] in ['current', 'rowconfigure', 'mark',
-                                              'columnconfigure','entryconfigure']),
+                        in ['command', 'cascade', 'separator', 'checkbutton'])
+                    -
+                    (construct_command[1] in ['current', 'rowconfigure',
+                                              'mark', 'columnconfigure',
+                                              'entryconfigure']),
                     len(construct_command), 2):
                 if construct_command[i] != '-menu':
-                    if i+1 >= len(construct_command) and construct_command[1] == 'insert':
-                        print("There are 2 different commands with same format.")
+                    if (i+1 >= len(construct_command) and
+                            construct_command[1] == 'insert'):
+                        print("There are 2 different commands",
+                              "with same format.")
                         break
                     additional_options[construct_command[i]] = \
                         construct_command[i+1]
@@ -206,7 +210,7 @@ class Implementer(QApplication):
         # If packing insert widget
         if construct_command[0] in ['bind']:
             print(args)
-            print("Binding to be implemented.") # TODO
+            print("Binding to be implemented.")  # TODO
             return
 
         # If packing insert widget
@@ -253,7 +257,8 @@ class Implementer(QApplication):
                     '-accelerator', None)
                 checkable = construct_command[2] == 'checkbutton'
                 if accelerator:
-                    action = QAction(label, widget, accelerator, checkable=checkable)
+                    action = QAction(label, widget, accelerator,
+                                     checkable=checkable)
                 else:
                     action = QAction(label, widget)
                 if command:
@@ -275,7 +280,8 @@ class Implementer(QApplication):
         master_id = construct_command[1][:construct_command[1].rfind('.!')]
 
         # If there is no window created, take first window as main.
-        if class_name in [QWidget, QGroupBox, QMainWindow] and self.window is None:
+        if class_name in [QWidget, QGroupBox,
+                          QMainWindow] and self.window is None:
             widget = class_name()
             self.window = widget
 

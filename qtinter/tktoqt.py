@@ -1,7 +1,7 @@
 import sys
 
 from .parameters_mapping import (get_parameters_values_mapping,
-                                get_parameters_names_mapping)
+                                 get_parameters_names_mapping)
 
 
 def translate_parameters_values(class_name, parameters):
