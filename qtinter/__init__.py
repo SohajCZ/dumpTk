@@ -10,7 +10,8 @@ from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,  # noqa
                      YES, RIDGE, E, W, N, S, NW, NE, SW, SE,  # noqa
                      END, HORIZONTAL) # noqa
 
-from .implementer import Implementer, QAction, QMouseEvent  # TODO Ok import?
+from .implementer import Implementer, QAction # TODO Ok import?
+from .event_builder import EventBuilder, SUPPORTED_EVENTS
 
 
 class StringVar(TkString):
@@ -54,18 +55,9 @@ class QtCallWrapper:
 
         # TODO: Now for events - need event translator
         # http://epydoc.sourceforge.net/stdlib/Tkinter.Event-class.html
-        if type(*args) == QMouseEvent:
-            event = Event()
-            pyqtevent = args[0]
-            event.num = pyqtevent.button()
-            event.state = 16  # TODO: Translater, many possibilities
-            # TODO: Event is only a container, no init, so I need to init it
-            event.char = None
-            event.delta = 0
-            event.type = "ButtonPress"
-            event.x = pyqtevent.x()
-            event.y = pyqtevent.y()
-            args = {event}
+        if type(*args) in SUPPORTED_EVENTS:
+            eb = EventBuilder(*args)
+            args = {eb.get_tk_event()}
 
         try:
             if self.subst:

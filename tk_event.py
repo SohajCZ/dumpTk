@@ -8,6 +8,11 @@ def mouseClick(event):
 
     print("mouse clicked")
 
+    for attr in ["serial","num","focus","height","width","keycode","state",
+                 "time","x","y","x_root","y_root","char","send_event",
+                 "keysym","keysym_num","type","widget","delta"]:
+        print("Attribute:", attr, "=", getattr(event, attr, "not set/found"))
+
 
 label = Label(window, text="Click me")
 label.pack()
