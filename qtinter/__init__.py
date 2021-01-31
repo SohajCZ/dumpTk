@@ -1,7 +1,7 @@
 # TODO: This could be how much I want to support tkinter
 from tkinter import (Frame, Button, LabelFrame, Label, Entry,  # noqa
                      Radiobutton, Text, Menu, Spinbox, Scale,  # noqa
-                     Listbox, Checkbutton)  # noqa
+                     Listbox, Checkbutton, Event)  # noqa
 from tkinter.ttk import (Combobox)  # noqa
 # TODO Comment why - want to handle this myself.
 from tkinter import StringVar as TkString
@@ -10,7 +10,7 @@ from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,  # noqa
                      YES, RIDGE, E, W, N, S, NW, NE, SW, SE,  # noqa
                      END, HORIZONTAL) # noqa
 
-from .implementer import Implementer, QAction  # TODO Ok import?
+from .implementer import Implementer, QAction, QMouseEvent  # TODO Ok import?
 
 
 class StringVar(TkString):
@@ -46,9 +46,26 @@ class QtCallWrapper:
         # if type(*args) == bool: # TODO: Generated from PushButtons
         #     print(*args)
 
-        # TKinter does not send clicked / QAction / so on values, omit those.
+        # TKinter does not send clicked (button property
+        # or QAction (menu iirc) - so on values, omit those.
         if type(*args) in [bool, QAction]:
+            print("Here", *args)
             args = {}
+
+        # TODO: Now for events - need event translator
+        # http://epydoc.sourceforge.net/stdlib/Tkinter.Event-class.html
+        if type(*args) == QMouseEvent:
+            event = Event()
+            pyqtevent = args[0]
+            event.num = pyqtevent.button()
+            event.state = 16  # TODO: Translater, many possibilities
+            # TODO: Event is only a container, no init, so I need to init it
+            event.char = None
+            event.delta = 0
+            event.type = "ButtonPress"
+            event.x = pyqtevent.x()
+            event.y = pyqtevent.y()
+            args = {event}
 
         try:
             if self.subst:

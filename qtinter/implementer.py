@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
                              QSlider, QCheckBox, QRadioButton, QListWidget,
                              QScrollBar)
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QMouseEvent  # noqa
 
 from .tktoqt import translate_parameters_for_class
 from .layouter import Layouter
@@ -209,8 +209,22 @@ class Implementer(QApplication):
 
         # If packing insert widget
         if construct_command[0] in ['bind']:
-            print(args)
-            print("Binding to be implemented.")  # TODO
+            #  TODO: Bind All
+            if construct_command[1] == 'all':
+                return
+
+            widget = self.namer[construct_command[1]]
+
+            # TODO: Events parser
+            if construct_command[2] == '<Button>':
+                #  TODO: Finish - getting the method to call
+                print(self.commands)
+                widget.mousePressEvent = self.commands[
+                    construct_command[3][6:].split(' ')[0]]
+            else:
+                # TODO: All widget event methods
+                return
+
             return
 
         # If packing insert widget
