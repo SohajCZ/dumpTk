@@ -21,19 +21,27 @@ class Example(QWidget):
     def catch_event(self, e):
         print("mouse catch")
 
-    def catch_event_escape(self, e):
+    def catch_event_shift_escape(self, e):
         print("shift escape catch")
 
+    def catch_event_escape(self, e):
+        print("escape catch")
 
-def call_if(key, modifiers, method, *arg):
-    or_modifier = 0
-    for modifier in modifiers:
-        or_modifier |= modifier
+    def catch_event_a(self, e):
+        print("a catch")
 
-    if issubclass(type(*arg), QEvent):
-        event = arg[0]
-        if event.key() == key and event.modifiers() == or_modifier:
-            method(event)
+
+def call_if(bindings, event):
+    for binding in bindings:
+        or_modifier = 0
+        for modifier in binding[1]:
+            or_modifier |= modifier
+
+        if issubclass(type(event), QEvent):
+            if event.key() == binding[0] and \
+                    int(event.modifiers()) == int(or_modifier):
+                binding[2](event)
+                return
 
 
 if __name__ == '__main__':
@@ -42,6 +50,15 @@ if __name__ == '__main__':
     # Mouse click binding example
     ex.mousePressEvent = ex.catch_event
     # Specific key binding example
-    ex.keyPressEvent = lambda e: call_if(Qt.Key_Escape, [Qt.ShiftModifier],
-                                         ex.catch_event_escape, e)
+    bindings = {}
+    bindings["Example"] = []
+    # Structure: key: name from "namer", value: array
+    # of tuples: (Key, Modifiers, Method to call)
+    bindings["Example"].append((Qt.Key_Escape, [Qt.ShiftModifier],
+                                ex.catch_event_shift_escape))
+    bindings["Example"].append((Qt.Key_Escape, [],
+                                ex.catch_event_escape))
+    bindings["Example"].append((Qt.Key_A, [], ex.catch_event_a))
+
+    ex.keyPressEvent = lambda event: call_if(bindings["Example"], event)
     sys.exit(app.exec_())
