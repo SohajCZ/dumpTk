@@ -3,7 +3,7 @@ from qtinter import *
 window = Tk()
 
 
-def mouseClick(event):
+def mouse_click(event):
     print("In", event) #  <ButtonPress event state=Mod2 num=1 x=24 y=11>
 
     print("mouse clicked")
@@ -17,6 +17,6 @@ def mouseClick(event):
 label = Label(window, text="Click me")
 label.pack()
 
-label.bind("<Button>", mouseClick)
+label.bind("<Button>", mouse_click)
 
 window.mainloop()

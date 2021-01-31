@@ -9,6 +9,7 @@ from PyQt5.QtGui import QPixmap, QMouseEvent  # noqa
 
 from .tktoqt import translate_parameters_for_class
 from .layouter import Layouter
+from .event_translate import get_method_for_event_from_sequence
 
 translate_class_dict = {
     'frame': QWidget,
@@ -215,15 +216,12 @@ class Implementer(QApplication):
 
             widget = self.namer[construct_command[1]]
 
-            # TODO: Events parser
-            if construct_command[2] == '<Button>':
-                #  TODO: Finish - getting the method to call
-                print(self.commands)
-                widget.mousePressEvent = self.commands[
-                    construct_command[3][6:].split(' ')[0]]
-            else:
-                # TODO: All widget event methods
-                return
+            # Set coresponding method according to sequence
+            # TODO: Multiple (as in PoC)
+            widget_method = get_method_for_event_from_sequence(
+                construct_command[2])
+            setattr(widget, widget_method, self.commands[
+                    construct_command[3][6:].split(' ')[0]])
 
             return
 

@@ -1,6 +1,6 @@
 from tkinter import Event
 from PyQt5.QtGui import (QEnterEvent, QInputEvent, QKeyEvent,
-                         QMouseEvent, QWheelEvent)
+                         QMouseEvent, QWheelEvent, QFocusEvent)
 
 # Not implemented events:
 # QNativeGestureEvent, QTabletEvent, QContextMenuEvent,
@@ -43,9 +43,10 @@ class EventBuilder:
             self.tk_event.num = "??"
 
         # focus - whether the window has the focus (Enter, Leave)
-        if type(self.qt_event) == QEnterEvent:
-            pass  # TODO: This is not supported in PyQt?
-            # self.tk_event.focus = None
+        if type(self.qt_event) == QFocusEvent:
+            self.tk_event.focus = self.qt_event.gotFocus()
+        else:
+            pass
             # Decided to pass this since it is not set usually.
 
         # TODO: What for? QExposeEvent?
