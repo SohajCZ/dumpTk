@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtGui import QMouseEvent, QKeyEvent
 
 
 class Example(QWidget):
@@ -17,6 +18,9 @@ class Example(QWidget):
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Escape:
             print("clicked escape")
+
+    def mousePressEvent(self, e):
+        print("did not catch it!")
 
     def catch_event(self, e):
         print("mouse catch")
@@ -38,10 +42,18 @@ def call_if(bindings, event):
             or_modifier |= modifier
 
         if issubclass(type(event), QEvent):
-            if event.key() == binding[0] and \
-                    int(event.modifiers()) == int(or_modifier):
-                binding[2](event)
-                return
+            if type(event) == QKeyEvent:
+                if event.key() == binding[0] and \
+                        int(event.modifiers()) == int(or_modifier):
+                    binding[2](event)
+                    return
+            elif type(event) == QMouseEvent:
+                if event.button() == binding[0] and \
+                        int(event.modifiers()) == int(or_modifier):
+                    binding[2](event)
+                    return
+
+            # TODO: More events ...
 
 
 if __name__ == '__main__':
@@ -51,14 +63,24 @@ if __name__ == '__main__':
     ex.mousePressEvent = ex.catch_event
     # Specific key binding example
     bindings = {}
-    bindings["Example"] = []
+    bindings["Example"] = {}
+    bindings["Example"]['keyPressEvent'] = []
     # Structure: key: name from "namer", value: array
     # of tuples: (Key, Modifiers, Method to call)
-    bindings["Example"].append((Qt.Key_Escape, [Qt.ShiftModifier],
+    bindings["Example"]['keyPressEvent'].append((Qt.Key_Escape, [Qt.ShiftModifier],
                                 ex.catch_event_shift_escape))
-    bindings["Example"].append((Qt.Key_Escape, [],
+    bindings["Example"]['keyPressEvent'].append((Qt.Key_Escape, [],
                                 ex.catch_event_escape))
-    bindings["Example"].append((Qt.Key_A, [], ex.catch_event_a))
+    bindings["Example"]['keyPressEvent'].append((Qt.Key_A, [], ex.catch_event_a))
 
-    ex.keyPressEvent = lambda event: call_if(bindings["Example"], event)
+    setattr(ex, 'keyPressEvent', lambda event: call_if(
+        bindings["Example"]['keyPressEvent'], event))
+
+    bindings["Example"]['mousePressEvent'] = []
+    bindings["Example"]['mousePressEvent'].append((Qt.LeftButton, [],
+                                ex.catch_event))
+
+    setattr(ex, 'mousePressEvent', lambda event: call_if(
+        bindings["Example"]['mousePressEvent'], event))
+
     sys.exit(app.exec_())
