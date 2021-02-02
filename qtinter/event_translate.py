@@ -51,7 +51,7 @@ import sys
 # MouseButton: https://doc.bccnsoft.com/docs/PyQt4/qt.html#MouseButton-enum
 # TkEvent: http://epydoc.sourceforge.net/stdlib/Tkinter.Event-class.html
 #
-# from PyQt5.QtCore import Qt
+#
 # Things i need to translate:
 # -----------------------
 #         if type(self.qt_event) in [QMouseEvent, QKeyEvent, QEnterEvent]:
@@ -70,12 +70,62 @@ import sys
 # -----------------------
 #        # TODO: This need translation !!!
 #        self.tk_event.type = self.qt_event.type()
-# -----------------------
-# Sequence parser + Translator
-# -----------------------
+
+
+def key_translator(qt_key):
+    # TODO: Docs
+    # Sources:
+    # Tk: http://www.tcl.tk/man/tcl8.4/TkCmd/keysyms.htm
+    # Qt: https://doc.bccnsoft.com/docs/PyQt4/qt.html#Key-enum
+
+    # According to sources, key values should be the same/similar
+    value = int(qt_key)
+    return value
+
+
+# Possibilities:
+# <MODIFIER-MODIFIER-TYPE-DETAIL>
+# <MODIFIER-TYPE-DETAIL>
+# <TYPE-DETAIL>
+# <DETAIL> -> Either number or Character so this translates to:
+#   '<1>' is the same as '<Button-1>'.
+#   'x' is the same as '<KeyPress-x>'.
+def sequence_parser(sequence):
+    # TODO: Docs
+    sequence = sequence.replace('<', '')
+    sequence = sequence.replace('>', '')
+    # Split sequence and revert list so we go from right to left.
+    sequence_split = sequence.split('-')
+    sequence_split.reverse()
+
+    # Setup return dict
+    parsed = {
+        "Detail": None,
+        "Type": None,
+        "Mod2": None,
+        "Mod1": None,
+    }
+
+    # Iterate thru keys and sequence
+    iteration_counter = 0
+    for key in parsed:
+        if iteration_counter < len(sequence_split):
+            parsed[key] = sequence_split[iteration_counter]
+            iteration_counter += 1
+        else:
+            break
+
+    if len(sequence_split) == 1:
+        if sequence_split[0].isnumeric():
+            parsed["Type"] = "Button"
+        else:
+            parsed["Type"] = "KeyPress"
+
+    return parsed
 
 
 def get_method_for_event_from_sequence(sequence):
+    # TODO: Docs
     # Source: https://doc.qt.io/qt-5/qwidget.html
     # Not implemented / connected
     # actionEvent(QActionEvent *event)
@@ -95,6 +145,7 @@ def get_method_for_event_from_sequence(sequence):
     # showEvent(QShowEvent *event)
     # tabletEvent(QTabletEvent *event)
 
+    # TODO: Move to some "settings"
     event_type_switch = {
         "Activate": None,
         "Button": "mousePressEvent",
@@ -116,25 +167,14 @@ def get_method_for_event_from_sequence(sequence):
         "Visibility": None,
     }
 
-    # TODO: parsing on one place ...
-    sequence = sequence.replace('<', '')
-    sequence = sequence.replace('>', '')
-    sequence_splitted = sequence.split('-')
-    for seq in sequence_splitted:
-        if seq in event_type_switch:
-            if event_type_switch[seq] is None:
-                print("Warning, event method for", seq, "not set.",
-                      file=sys.stderr)
-            else:
-                return event_type_switch[seq]
+    sequence_parsed = sequence_parser(sequence)
+    type = sequence_parsed["Type"]
 
-    if len(sequence_splitted) == 1:
-        # '<1>' is the same as '<Button-1>'.
-        # 'x' is the same as '<KeyPress-x>'.
-        if type(sequence_splitted[0]) == str:
-            return "keyPressEvent"
-        else:
-            return "mousePressEvent"
+    if event_type_switch[type] is None:
+        print("Warning, event method for", type, "not set.",
+              file=sys.stderr)
+    else:
+        return event_type_switch[type]
 
     print("Warning, event type not found in sequence", sequence,
           file=sys.stderr)
