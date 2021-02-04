@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
 
 from .translate_qt_core import translate_align
 
-# TODO: Enums?
+
 PACK = "pack"
 GRID = "grid"
 
@@ -16,7 +16,10 @@ class MixedLayouts(Exception):
     pass
 
 
-class Layouter:  # TODO Pack / Grid polymorfism.
+# TODO: Future improvement: Pack / Grid polymorfism.
+class Layouter:
+    """This class solves itself placing widget
+    simmilarily as tkinter geometry manager does."""
 
     def __init__(self, kind=None):
         self.kind = None
@@ -29,7 +32,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
 
         self.inited = False
 
-        if kind is None:  # TODO: I might need to not have it really inited?
+        if kind is None:
             return
 
         self._manual_init(kind)
@@ -41,7 +44,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
             self._init_pack(other_args)
         elif kind == GRID:
             self._init_grid(other_args)
-        # TODO Else? (place)
+        # Place omited.
 
         self.inited = True
 
@@ -73,7 +76,7 @@ class Layouter:  # TODO Pack / Grid polymorfism.
             self.layout.addLayout(self.left)
             self.layout.addLayout(self.column_layout)
             self.layout.addLayout(self.right)
-        else:  # TODO: Support only left and top? Gonna say this means top.
+        else:  # Supports only left and top - Gonna say this means top.
             # Init top level layout
             self.layout = QVBoxLayout()
 
@@ -92,16 +95,13 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         self.layout = QGridLayout()
 
     def _get_layout_for_side(self, side=TOP):
-        # TODO : "Switch"
+        side_switch = {
+            TOP: self.top,
+            LEFT: self.left,
+            RIGHT: self.right,
+        }
 
-        if side == TOP:
-            return self.top
-        elif side == LEFT:
-            return self.left
-        elif side == RIGHT:
-            return self.right
-        else:
-            return self.bottom
+        return side_switch.get(side, self.bottom)
 
     def pack_widget(self, widget, other_args={}):
         side = other_args.get('-side', "top")
@@ -130,7 +130,6 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         layout, found_index = self.grid_find_widget(self.layout, widget)
         if found_index != -1:
             row, column, rows, cols = layout.getItemPosition(found_index)
-            print(row, column, rows, cols)
 
         row_new = other_args.get('-row', row)
         column_new = other_args.get('-column', column)
@@ -148,9 +147,9 @@ class Layouter:  # TODO Pack / Grid polymorfism.
         return
 
     def add_widget(self, widget, kind="pack", other_args={}):
-        # TODO: Docs.
-        # Args could be dict with side for pack (-side),
-        # row (-row)/column (-column) for grid, sticky and so on.
+        """Adds widget to the layout, checks layout kind
+        and accepts other arguments as "-side" for pack
+        or "-columnspan" for grid."""
 
         if not self.inited:
             self._manual_init(kind, other_args)
@@ -162,4 +161,4 @@ class Layouter:  # TODO Pack / Grid polymorfism.
             self.pack_widget(widget, other_args)
         elif kind == GRID:
             self.grid_widget(widget, other_args)
-        # TODO Else? (place)
+        # Place omitted.

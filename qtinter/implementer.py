@@ -13,6 +13,7 @@ from .layouter import Layouter
 from .event_translate import (get_method_for_type, sequence_parser,
                               tk_modifier_to_qt)
 
+# TODO: Future improvement: Move to "settings".
 translate_class_dict = {
     'frame': QWidget,
     'button': QPushButton,
@@ -28,21 +29,21 @@ translate_class_dict = {
     'listbox': QListWidget,
     'combobox': QComboBox,
     'photo': QPixmap,
-    'toplevel': QMainWindow,  # TODO Is this legal? => Test via IDLE
+    'toplevel': QMainWindow,
     'scrollbar': QScrollBar,
 }
 
 ttk_dict = {}
 
 for item in translate_class_dict:
-    # TODO: Rightful omit of ttk?
+    # Ttk is not supported differently.
     ttk_dict['ttk::'+item] = translate_class_dict[item]
 
 translate_class_dict.update(ttk_dict)
 
 
 def translate_class(key):
-    # TODO Doc
+    """Returns Qt class for Tk class name."""
     return translate_class_dict[key]
 
 
@@ -88,7 +89,6 @@ class Menu(QMainWindow):  # TODO: Rename, naming wrong ...
 
     def remember_label(self, label):
         if self.label != "":
-            # TODO Remove if possible or implement queue
             print("Warning - need to make queue", file=sys.stderr)
         self.label = label
 
@@ -109,8 +109,9 @@ class Implementer(QApplication):
         self.masters = dict()
 
     def add_to_namer(self, key, item):
-        # TODO: Docs. For controll but mainly for forcing own menu.
-        #  TODO: Even when configured at last.
+        """Function for controll what is added to cache of names of widgets.
+        This is implemented mainly because of exchanging QtMenu for TkMenu."""
+
         if key not in self.namer:
             self.namer[key] = item
         else:
@@ -119,11 +120,11 @@ class Implementer(QApplication):
                       key, file=sys.stderr)
 
     def create_menu(self, menu=None):
-        # TODO: Docs.
+        """Function which triggers menu bar to show in application."""
         self.menu = True
 
     def show(self):
-        if not self.window:  # TODO Check this part after master layout rework
+        if not self.window:
             self.window = QWidget()
 
         # Some applications might not have layouts.
@@ -189,15 +190,13 @@ class Implementer(QApplication):
 
         if construct_command == 'destroy':
             self.quit()
-            # TODO: If destroy, then in args is second parameter,
-            # TODO: which is master of deleted widget.
             return
 
         if construct_command in ['wm', 'bind']:  # TODO 'WM_DELETE_WINDOW'
-            print(args)
+            # print(args)
             return
 
-        # TODO Omit place (???)
+        # Omitting place
 
         # Adding text to QLineEdit # TODO This is "other arg bs"
         if type(construct_command) == str:
@@ -238,7 +237,7 @@ class Implementer(QApplication):
         if construct_command[0] in ['bind']:
             if construct_command[1] == 'all':
                 # TODO: widget = self.namer['.']
-                # TODO: Does this makes sense? Since I will catch everything ...
+                # TODO: Does this makes sense? Since it will catch everything
                 return
             else:
                 widget = self.namer[construct_command[1]]
@@ -250,7 +249,7 @@ class Implementer(QApplication):
             if not construct_command[1] in self.bindings:
                 self.bindings[construct_command[1]] = {}
 
-            if not widget_method in self.bindings[construct_command[1]]:
+            if widget_method not in self.bindings[construct_command[1]]:
                 self.bindings[construct_command[1]][widget_method] = []
 
             modifiers = []

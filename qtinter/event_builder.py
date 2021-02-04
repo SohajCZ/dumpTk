@@ -11,17 +11,23 @@ SUPPORTED_EVENTS = [QEnterEvent, QInputEvent, QKeyEvent,
 
 
 class EventBuilder:
+    """Builds TkEvent from QtEvent."""
+
     def __init__(self, qt_event):
         self.qt_event = qt_event
         self.tk_event = None
 
     def get_tk_event(self):
+        """Returns TkEvent from QtEvent."""
+
         if self.tk_event is not None:
             return self.tk_event
 
         return self._build_tk_event()
 
     def _build_tk_event(self):
+        """Builds TkEvent from QtEvent."""
+
         # Tkinter Event:
         # %# %b %f %h %k %s %t %w %x %y %A %E %K %N %W %T %X %Y %D
 
@@ -32,8 +38,7 @@ class EventBuilder:
 
         self.tk_event = Event()
 
-        # serial - serial number of event
-        # TODO: I will omit this. Will see if I need it.
+        # serial - serial number of event - did no come to conclusion when used
         self.tk_event.serial = 42
 
         # num - mouse button pressed (ButtonPress, ButtonRelease)
@@ -49,7 +54,6 @@ class EventBuilder:
             pass
             # Decided to pass this since it is not set usually.
 
-        # TODO: What for? QExposeEvent?
         # height - height of the exposed window (Configure, Expose)
         # width - width of the exposed window (Configure, Expose)
         self.tk_event.height = "??"  # Set as "default"
@@ -74,9 +78,8 @@ class EventBuilder:
         else:
             self.tk_event.state = "??"
 
-        # time - when the event occurred
+        # time - when the event occurred - only successors of QInputEvent
         if issubclass(type(self.qt_event), QInputEvent):
-            # TODO: Only successors of QInputEvent has this (?)
             self.tk_event.time = self.qt_event.timestamp()
         else:
             self.tk_event.time = "??"
@@ -84,7 +87,6 @@ class EventBuilder:
         # x - x-position of the mouse
         # y - y-position of the mouse
         if type(self.qt_event) in [QMouseEvent, QEnterEvent]:
-            # TODO: Only those? Only those from imported now.
             self.tk_event.x = self.qt_event.x()
             self.tk_event.y = self.qt_event.y()
         else:

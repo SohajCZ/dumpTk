@@ -5,7 +5,8 @@ from .parameters_mapping import (get_parameters_values_mapping,
 
 
 def translate_parameters_values(class_name, parameters):
-    # TODO: Doc
+    """Translates values of parameters to PyQt format."""
+
     mapping = get_parameters_values_mapping(class_name)
 
     for parameter in parameters:
@@ -17,7 +18,7 @@ def translate_parameters_values(class_name, parameters):
 
 
 def translate_parameters_names(class_name, parameters):
-    # TODO: Doc
+    """Translates names of parameters to PyQt format."""
 
     mapping = get_parameters_names_mapping(class_name)
     translated_parameters = {}
@@ -35,8 +36,8 @@ def translate_parameters_names(class_name, parameters):
 
 
 def translate_parameters_for_class(class_name, parameters):
-    # TODO: Doc - parameters are dict
-    # TODO: { "parameter_name": parameter_value, ... }
+    """Translates names of parameters and values of parameters
+    to PyQt format for class name."""
 
     # First call renaming values
     values_translated = translate_parameters_values(class_name, parameters)

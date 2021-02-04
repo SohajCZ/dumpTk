@@ -1,22 +1,22 @@
-parameters_names_mapping = {  # TODO All
+parameters_names_mapping = {
     "all": {
         '-text': 'setText',
-        '-fg': 'setStyleSheet',  # TODO For all? Test + implement
-        '-padx': 'setStyleSheet',  # TODO Implement
-        '-pady': 'setStyleSheet',  # TODO Implement
+        '-fg': 'setStyleSheet',
+        '-padx': 'setStyleSheet',
+        '-pady': 'setStyleSheet',
         # TODO Margins and so on.
     },
     "QPushButton": {
         '-command': 'clicked.connect',
     },
     "QWidget": {
-        '-width': 'setMinimumWidth',  # TODO Test
-        '-height': 'setMinimumHeight',  # TODO Test
-        '-background': 'setStyleSheet',  # TODO Test
+        '-width': 'setMinimumWidth',
+        '-height': 'setMinimumHeight',
+        '-background': 'setStyleSheet',
     },
     "QGridBox": {
         '-text': 'setTitle',
-        '-relief': 'setStyleSheet',  # TODO Not really implemented
+        '-relief': 'setStyleSheet',
     },
     "QMenu": {
         # TODO Remove if combinations working.

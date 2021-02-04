@@ -70,11 +70,15 @@ import sys
 # -----------------------
 #        # TODO: This need translation !!!
 #        self.tk_event.type = self.qt_event.type()
+# TODO: Feature improvement:
+# Resolving method for missing parameters
+# Making "settings"
 from PyQt5.QtCore import Qt
 
 
 def key_translator(qt_key):
-    # TODO: Docs
+    """Translates QtKey to TkKey."""
+
     # Sources:
     # Tk: http://www.tcl.tk/man/tcl8.4/TkCmd/keysyms.htm
     # Qt: https://doc.bccnsoft.com/docs/PyQt4/qt.html#Key-enum
@@ -82,6 +86,9 @@ def key_translator(qt_key):
     # According to sources, key values should be the same/similar
     value = int(qt_key)
     return value
+
+
+# TODO: Mouse translator - right = 3 for Tkinter, 2 for PyQt5
 
 
 # Possibilities:
@@ -126,7 +133,7 @@ def sequence_parser(sequence):
 
 
 def tk_modifier_to_qt(tk_modifier):
-    # TODO: Docs
+    """Takes tk_modifier and translates it to Qt Modifier."""
 
     qt_modifiers = {
         "Alt": Qt.AltModifier,
@@ -142,7 +149,8 @@ def tk_modifier_to_qt(tk_modifier):
     # Qt.NoModifier, Qt.MetaModifier, Qt.KeypadModifier, Qt.GroupSwitchModifier
 
     if tk_modifier not in qt_modifiers:
-        print("Warning, tk modifier", tk_modifier, "not found in translate dict",
+        print("Warning, tk modifier", tk_modifier,
+              "not found in translate dict",
               file=sys.stderr)
 
     if qt_modifiers[tk_modifier] is None:
@@ -153,27 +161,8 @@ def tk_modifier_to_qt(tk_modifier):
 
 
 def get_method_for_type(event_type):
-    # TODO: Docs
-    # Source: https://doc.qt.io/qt-5/qwidget.html
-    # Not implemented / connected
-    # actionEvent(QActionEvent *event)
-    # changeEvent(QEvent *event)
-    # closeEvent(QCloseEvent *event)
-    # contextMenuEvent(QContextMenuEvent *event)
-    # dragEnterEvent(QDragEnterEvent *event)
-    # dragLeaveEvent(QDragLeaveEvent *event)
-    # dragMoveEvent(QDragMoveEvent *event)
-    # dropEvent(QDropEvent *event)
-    # hideEvent(QHideEvent *event)
-    # inputMethodEvent(QInputMethodEvent *event)
-    # mouseDoubleClickEvent(QMouseEvent *event)
-    # moveEvent(QMoveEvent *event)
-    # paintEvent(QPaintEvent *event)
-    # resizeEvent(QResizeEvent *event)
-    # showEvent(QShowEvent *event)
-    # tabletEvent(QTabletEvent *event)
+    """Resolves event_type from Tkinter name to PyQt widget method."""
 
-    # TODO: Move to some "settings"
     event_type_switch = {
         "Activate": None,
         "Button": "mousePressEvent",
@@ -195,7 +184,25 @@ def get_method_for_type(event_type):
         "Visibility": None,
     }
 
-    # TODO Make resolving method?
+    # Source: https://doc.qt.io/qt-5/qwidget.html
+    # Not implemented / connected
+    # actionEvent(QActionEvent *event)
+    # changeEvent(QEvent *event)
+    # closeEvent(QCloseEvent *event)
+    # contextMenuEvent(QContextMenuEvent *event)
+    # dragEnterEvent(QDragEnterEvent *event)
+    # dragLeaveEvent(QDragLeaveEvent *event)
+    # dragMoveEvent(QDragMoveEvent *event)
+    # dropEvent(QDropEvent *event)
+    # hideEvent(QHideEvent *event)
+    # inputMethodEvent(QInputMethodEvent *event)
+    # mouseDoubleClickEvent(QMouseEvent *event)
+    # moveEvent(QMoveEvent *event)
+    # paintEvent(QPaintEvent *event)
+    # resizeEvent(QResizeEvent *event)
+    # showEvent(QShowEvent *event)
+    # tabletEvent(QTabletEvent *event)
+
     if event_type not in event_type_switch:
         print("Warning, event type", event_type, "not found in sequence",
               file=sys.stderr)

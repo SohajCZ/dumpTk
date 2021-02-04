@@ -42,7 +42,7 @@ def translate_align(sticky_string):
     """
 
     # Int value of Qt.AlignCenter = 132
-    alignment = 0 if len(sticky_string) > 1 else Qt.AlignCenter
+    alignment = 0
 
     align_switch = {
         'n': Qt.AlignTop,
@@ -56,8 +56,8 @@ def translate_align(sticky_string):
     for align in sticky_string:
         alignment |= align_switch[align]
 
-    # TODO: You can use at most one horizontal and one vertical flag at a time. Qt.AlignCenter counts as both horizontal and vertical.
-    # TODO: Qt.AlignJustify 	0x0008 	Justifies the text in the available space.
-    # TODO: AlignVCenter != AlignLeft + AlignRight !!!
+    if (('n' in sticky_string and 's' in sticky_string) or
+        ('w' in sticky_string and 'e' in sticky_string)):
+        alignment |= Qt.AlignJustify
 
     return Qt.Alignment(alignment)
