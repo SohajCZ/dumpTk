@@ -70,6 +70,7 @@ import sys
 # -----------------------
 #        # TODO: This need translation !!!
 #        self.tk_event.type = self.qt_event.type()
+from PyQt5.QtCore import Qt
 
 
 def key_translator(qt_key):
@@ -124,7 +125,34 @@ def sequence_parser(sequence):
     return parsed
 
 
-def get_method_for_event_from_sequence(sequence):
+def tk_modifier_to_qt(tk_modifier):
+    # TODO: Docs
+
+    qt_modifiers = {
+        "Alt": Qt.AltModifier,
+        "Any": None,
+        "Control": Qt.ControlModifier,
+        "Double": None,
+        "Lock": None,
+        "Shift": Qt.ShiftModifier,
+        "Triple": None,
+    }
+
+    # Not implemented Qt modifiers:
+    # Qt.NoModifier, Qt.MetaModifier, Qt.KeypadModifier, Qt.GroupSwitchModifier
+
+    if tk_modifier not in qt_modifiers:
+        print("Warning, tk modifier", tk_modifier, "not found in translate dict",
+              file=sys.stderr)
+
+    if qt_modifiers[tk_modifier] is None:
+        print("Warning, event method for", type, "not set.",
+              file=sys.stderr)
+    else:
+        return qt_modifiers[tk_modifier]
+
+
+def get_method_for_type(event_type):
     # TODO: Docs
     # Source: https://doc.qt.io/qt-5/qwidget.html
     # Not implemented / connected
@@ -167,14 +195,13 @@ def get_method_for_event_from_sequence(sequence):
         "Visibility": None,
     }
 
-    sequence_parsed = sequence_parser(sequence)
-    type = sequence_parsed["Type"]
+    # TODO Make resolving method?
+    if event_type not in event_type_switch:
+        print("Warning, event type", event_type, "not found in sequence",
+              file=sys.stderr)
 
-    if event_type_switch[type] is None:
-        print("Warning, event method for", type, "not set.",
+    if event_type_switch[event_type] is None:
+        print("Warning, event method for", event_type, "not set.",
               file=sys.stderr)
     else:
-        return event_type_switch[type]
-
-    print("Warning, event type not found in sequence", sequence,
-          file=sys.stderr)
+        return event_type_switch[event_type]

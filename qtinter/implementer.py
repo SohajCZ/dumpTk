@@ -5,11 +5,13 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
                              QSlider, QCheckBox, QRadioButton, QListWidget,
                              QScrollBar)
-from PyQt5.QtGui import QPixmap, QMouseEvent  # noqa
+from PyQt5.QtGui import QPixmap, QKeyEvent, QMouseEvent
+from PyQt5.QtCore import QEvent
 
 from .tktoqt import translate_parameters_for_class
 from .layouter import Layouter
-from .event_translate import get_method_for_event_from_sequence
+from .event_translate import (get_method_for_type, sequence_parser,
+                              tk_modifier_to_qt)
 
 translate_class_dict = {
     'frame': QWidget,
@@ -42,6 +44,28 @@ translate_class_dict.update(ttk_dict)
 def translate_class(key):
     # TODO Doc
     return translate_class_dict[key]
+
+
+def call_if_binding_holds(bindings, event):
+    # TODO: Doc - For checking if keys in event holds.
+    for binding in bindings:
+        or_modifier = 0
+        for modifier in binding[1]:
+            or_modifier |= modifier
+
+        if issubclass(type(event), QEvent):
+            if type(event) == QKeyEvent:
+                if int(event.key()) == int(binding[0]) and \
+                        int(event.modifiers()) == int(or_modifier):
+                    binding[2](event)
+                    return
+            elif type(event) == QMouseEvent:
+                if int(event.button()) == int(binding[0]) and \
+                        int(event.modifiers()) == int(or_modifier):
+                    binding[2](event)
+                    return
+
+            # TODO: More events ...
 
 
 class Menu(QMainWindow):  # TODO: Rename, naming wrong ...
@@ -78,6 +102,8 @@ class Implementer(QApplication):
         self.window = None
         #: Dict of widgets ids as keys and their layouts (Layouter) as values
         self.layouter = {'.': Layouter()}
+        #: Key bindings for widgets
+        self.bindings = {}
         self.menu = False
         #: Dict of widgets ids as keys and their master widgets ids as values
         self.masters = dict()
@@ -210,18 +236,36 @@ class Implementer(QApplication):
 
         # If packing insert widget
         if construct_command[0] in ['bind']:
-            #  TODO: Bind All
             if construct_command[1] == 'all':
+                # TODO: widget = self.namer['.']
+                # TODO: Does this makes sense? Since I will catch everything ...
                 return
+            else:
+                widget = self.namer[construct_command[1]]
 
-            widget = self.namer[construct_command[1]]
+            sequence_parsed = sequence_parser(construct_command[2])
+            widget_method = get_method_for_type(sequence_parsed["Type"])
 
-            # Set coresponding method according to sequence
-            # TODO: Multiple (as in PoC)
-            widget_method = get_method_for_event_from_sequence(
-                construct_command[2])
-            setattr(widget, widget_method, self.commands[
-                    construct_command[3][6:].split(' ')[0]])
+            # Prepare bindings, if not yet
+            if not construct_command[1] in self.bindings:
+                self.bindings[construct_command[1]] = {}
+
+            if not widget_method in self.bindings[construct_command[1]]:
+                self.bindings[construct_command[1]][widget_method] = []
+
+            modifiers = []
+            if sequence_parsed["Mod1"]:
+                modifiers.append(tk_modifier_to_qt(sequence_parsed["Mod1"]))
+            if sequence_parsed["Mod2"]:
+                modifiers.append(tk_modifier_to_qt(sequence_parsed["Mod2"]))
+
+            command = self.commands[construct_command[3][6:].split(' ')[0]]
+
+            self.bindings[construct_command[1]][widget_method].append(
+                (sequence_parsed["Detail"], modifiers, command))
+
+            setattr(widget, widget_method, lambda event: call_if_binding_holds(
+                self.bindings[construct_command[1]][widget_method], event))
 
             return
 
