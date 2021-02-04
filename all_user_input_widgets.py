@@ -1,5 +1,9 @@
 # Source: https://runestone.academy/runestone/books/published/thinkcspy/GUIandEventDrivenProgramming/03_widgets.html
 
+# import tkinter as tk
+# import tkinter.ttk as ttk
+# from tkinter import filedialog
+
 import qtinter as tk
 import qtinter as ttk
 from qtinter import filedialog
@@ -178,6 +182,8 @@ class Counter_program():
         no_click_quit_button.grid(row=2, column=3)
 
         no_click_quit_button.bind("<Enter>", self.destroy_via_event)
+
+        self.window.bind("<KeyPress-A>", self.destroy_via_event)
 
 
 # Create the entire GUI program

@@ -36,6 +36,9 @@ def translate_align(sticky_string):
     will stretch the widget vertically and place it against the
     west (left) wall.
 
+    Qt:
+    https://doc.bccnsoft.com/docs/PyQt4/qt.html#AlignmentFlag-enum
+
     """
 
     # Int value of Qt.AlignCenter = 132
@@ -52,5 +55,9 @@ def translate_align(sticky_string):
     # Such as QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom
     for align in sticky_string:
         alignment |= align_switch[align]
+
+    # TODO: You can use at most one horizontal and one vertical flag at a time. Qt.AlignCenter counts as both horizontal and vertical.
+    # TODO: Qt.AlignJustify 	0x0008 	Justifies the text in the available space.
+    # TODO: AlignVCenter != AlignLeft + AlignRight !!!
 
     return Qt.Alignment(alignment)
