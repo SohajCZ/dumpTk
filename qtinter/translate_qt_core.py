@@ -1,9 +1,16 @@
+"""
+This file contains support functions
+for Layouter. Currently it olny contains 1 method:
+- translate_align - Translates sticky string from Tkinter to QtAlignment value.
+                    Bit operations are used.
+"""
 from PyQt5.QtCore import Qt
 
 
 def translate_align(sticky_string):
-    # TODO Doc (for real)
     """
+    Translates sticky string from Tkinter to QtAlignment value.
+
     https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/grid.html
 
     ---------------
@@ -57,7 +64,7 @@ def translate_align(sticky_string):
         alignment |= align_switch[align]
 
     if (('n' in sticky_string and 's' in sticky_string) or
-        ('w' in sticky_string and 'e' in sticky_string)):
+            ('w' in sticky_string and 'e' in sticky_string)):
         alignment |= Qt.AlignJustify
 
     return Qt.Alignment(alignment)

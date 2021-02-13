@@ -1,3 +1,62 @@
+"""
+This file contains class Layouter.
+This class solves layout management with QGridLayout of QBoxLayout from Qt
+as much similar as possible to geometry manager of Tkinter. Layouter
+does not support place geometry method from Tkinter since
+
+Layouter is instantiated as not initiated. This is because Layouter
+if created immediately when widget is created, where child
+layouts might not be needed. Child layouts are instantiated only when
+another widget is created with original widget as master.
+
+Child widget could be added with add_widget method. When not initiated,
+as mentioned above, method _manual_init is called. Added child widget
+decides if Layouter is initiated with grid of pack strategy.
+
+If grid strategy is used, QGridLayout is initiated. Layouter currently
+supports assignment of row/column, row/column-span and sticky, which decides
+how free space in grid is used. More could be implemented - TODO.
+
+If pack strategy is used, initiation differs according to child widgets
+packed side. If child is packed on left side, QHBoxLayout (horizontal) is
+initiated and gradually filled with:
+1) QHBoxLayout (for left packed child),
+2) QHBoxLayout with QVBoxLayout (for top packed child) and QVBoxLayout with
+reverse order (for bottom packed child)
+3) QHBoxLayout with reverse order (for right packed child)
+as for three columns with middle column having top and bottom part.
+
+If child is packed on any other side then left, QVBoxLayout (vertical) is
+initiated and gradually filled with:
+1) QVBoxLayout (for top packed child),
+2) QVBoxLayout with QHBoxLayout (for left packed child) and QHBoxLayout with
+reverse order (for right packed child),
+3) QVBoxLayout with reverse order (for bottom packed child),
+as for three rows with middle row having left and right part.
+
+These two strategies for packing proved as most similar solution
+to the Packer from Tkinter and also the best looking one since
+packing first widget as bottom or right did not really made sense.
+
+Packing does not support any more additional options at the moment - TODO.
+
+After initial, pack_widget or grid_widget methods are used by Layouter
+independently. In case of pack, Layouter has references on every layout
+(left, right, bottom, top), all of them are created everytime.
+
+Layouter does not support mixing layouts, when Layouter is initiated,
+kind of layout (pack, grid) cannot change. If widget with different
+kind is being packed, exception is thrown.
+
+Layouter is recursive structure by its definition. Kind of layout
+cannot be mixed in one master widget, but master widget could be
+placed in different kind of layout then its own layout kind is and
+so on.
+
+Note that it would be better to have Layouter class as ancestor
+of GridLayouter and PackLayouter to implement polymorphism - TODO.
+"""
+
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout, QGridLayout, QBoxLayout
 
 from .translate_qt_core import translate_align
@@ -16,10 +75,9 @@ class MixedLayouts(Exception):
     pass
 
 
-# TODO: Future improvement: Pack / Grid polymorfism.
 class Layouter:
     """This class solves itself placing widget
-    simmilarily as tkinter geometry manager does."""
+    similarly as tkinter geometry manager does."""
 
     def __init__(self, kind=None):
         self.kind = None
@@ -49,9 +107,30 @@ class Layouter:
         self.inited = True
 
     def _init_pack(self, other_args={}):
+        """
+        If pack strategy is used, initiation differs according to child widgets
+        packed side. If child is packed on left side, QHBoxLayout (horizontal)
+        is initiated and gradually filled with:
+        1) QHBoxLayout (for left packed child),
+        2) QHBoxLayout with QVBoxLayout (for top packed child) and QVBoxLayout
+        with reverse order (for bottom packed child)
+        3) QHBoxLayout with reverse order (for right packed child)
+        as for three columns with middle column having top and bottom part.
+
+        If child is packed on any other side then left, QVBoxLayout (vertical)
+        is initiated and gradually filled with:
+        1) QVBoxLayout (for top packed child),
+        2) QVBoxLayout with QHBoxLayout (for left packed child) and QHBoxLayout
+        with reverse order (for right packed child),
+        3) QVBoxLayout with reverse order (for bottom packed child),
+        as for three rows with middle row having left and right part.
+
+        These two strategies for packing proved as most similar solution
+        to the Packer from Tkinter and also the best looking one since
+        packing first widget as bottom or right did not really made sense.
+        """
+
         side = other_args.get('-side', TOP)
-        # TODO: Docs
-        # TODO: Work with other_args
 
         # Init vertical layouts
         self.top = QVBoxLayout()
@@ -91,7 +170,7 @@ class Layouter:
             self.layout.addLayout(self.bottom)
 
     def _init_grid(self, other_args={}):
-        # TODO: Work with other_args
+        """Initiates QGridLayout."""
         self.layout = QGridLayout()
 
     def _get_layout_for_side(self, side=TOP):
