@@ -1,3 +1,17 @@
+"""
+This file serves as reimbursement for tkinter.filedialog module.
+
+Currently implements dialogs (left = Tkinter dialog command):
+    'askopenfilename': 'getOpenFileName',
+    'asksaveasfilename': 'getSaveFileName',
+    'askopenfilenames': 'getOpenFileNames',
+    askdirectory': 'getExistingDirectory',
+
+Others are not directly support in PyQt.
+
+Note that content of file_dialog_translate dict could be moved
+to some unified settings of this project. TODO
+"""
 from PyQt5.QtWidgets import QFileDialog
 
 

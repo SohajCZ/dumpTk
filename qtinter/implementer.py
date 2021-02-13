@@ -13,6 +13,7 @@ Tcl/Tk, and parses it in following steps (also comments in code):
    During this, function call_if_binding_holds is used, since
    Tkinter allows to bind commands to special shortcuts, but
    Qt has slots on widgets and shortcut is usually checked in this slot.
+   There are two more files used for events: event_translate and event_builder.
 4) If main command is about layout, geometry management and such,
    forward it to function which solves that,
    which delegates it to Layouter class; and return.
@@ -76,6 +77,9 @@ Since Tkinter application can acquire menu, command -menu is translated to
 Implementers create_menu, which in reality just checks flag, which is
 then used to decide if Menu instance should be declared as central widget in
 show method.
+
+Note that content of translate_class_dict dict could be moved
+to some unified settings of this project. TODO
 """
 import sys
 

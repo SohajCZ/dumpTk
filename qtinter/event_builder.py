@@ -1,3 +1,27 @@
+"""
+This file contains EventBuilder class.
+This class serves as translator from Qt event to Tk event.
+
+Since we've created everything using Qt, Qt events are occurring,
+but the original program in Tkinter could use event in its
+functions or methods. There Qt event needs to be translated back
+to Tk event.
+
+Tkinter does similar logic with event from Tcl/Tk. When Tkinter binds
+event, it does not bind the event just itself, but binds logic that
+will emit signal but also stores event parameters in given string
+which needs to be formatted. These could be found with explanation here:
+https://docs.python.org/3/library/tkinter.html#bindings-and-events (in table).
+
+Note that this could be improved with writing setter method. TODO
+
+Implemented (supported) events could be found in SUPPORTED_EVENTS list. TODO
+
+Note that some of events behavioral is not same in Tkinter and PyQt,
+for instance QKeyEvent from Qt does not support working with position,
+but according to http://epydoc.sourceforge.net/stdlib/Tkinter.Event-class.html
+Tkinter does.
+"""
 from tkinter import Event
 from PyQt5.QtGui import (QEnterEvent, QInputEvent, QKeyEvent,
                          QMouseEvent, QWheelEvent, QFocusEvent)
@@ -104,7 +128,7 @@ class EventBuilder:
             self.tk_event.x_root = self.qt_event.screenPos().x()
             self.tk_event.y_root = self.qt_event.screenPos().y()
             # TODO: No translation for Motion
-            # QKeyEvent does not have this
+            # QKeyEvent does not have this.
         else:
             self.tk_event.x_root = "??"
             self.tk_event.y_root = "??"
@@ -116,8 +140,6 @@ class EventBuilder:
         else:
             self.tk_event.char = "??"
 
-        # send_event - see X/Windows documentation
-        # TODO: see X/Windows documentation
         self.tk_event.send_event = False
 
         # keysym - keysym of the event as a string (KeyPress, KeyRelease)
@@ -135,7 +157,7 @@ class EventBuilder:
         self.tk_event.type = self.qt_event.type()
 
         # widget - widget in which the event occurred
-        # TODO: There is no way to get this in PyQt?
+        # There is no way to get this in PyQt.
 
         # delta - delta of wheel movement (MouseWheel)
         if type(self.qt_event) == QWheelEvent:
