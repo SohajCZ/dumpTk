@@ -14,6 +14,8 @@ Tcl/Tk, and parses it in following steps (also comments in code):
    Tkinter allows to bind commands to special shortcuts, but
    Qt has slots on widgets and shortcut is usually checked in this slot.
    There are two more files used for events: event_translate and event_builder.
+   Note that call_if_binding_holds now supports only QKeyEvent,
+   QMousePressEvent, and QEnterEvent - TODO.
 4) If main command is about layout, geometry management and such,
    forward it to function which solves that,
    which delegates it to Layouter class; and return.
@@ -79,7 +81,7 @@ then used to decide if Menu instance should be declared as central widget in
 show method.
 
 Note that content of translate_class_dict dict could be moved
-to some unified settings of this project. TODO
+to some unified settings of this project - TODO.
 """
 import sys
 
@@ -247,6 +249,9 @@ class Implementer(QApplication):
         try:  # TODO: Remove this and support most of attributes
             return getattr(o, name)(params)
         except KeyError:
+            print("Warning, method", name, "for object",
+                  o, "does not exists.",
+                  file=sys.stderr)
             pass
 
     def createcommand(self, cbname, bound_method, reassign_name=None):

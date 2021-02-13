@@ -1,3 +1,26 @@
+"""
+This file contains mappings:
+parameters_names_mapping - Mapping of Tcl/Tk command attributes
+                           to methods of Qt/own objects.
+                           Own objects are included because
+                           of implementation details such as
+                           menu problem (see description of
+                           Implementer file.
+parameters_values_mapping - Mapping of Tcl/Tk attributes values
+                           to valid values for parameters of
+                           methods got from parameters_names_mapping.
+
+Mappigs are obtained with get_parameters_names_mapping and
+get_parameters_values_mapping functions respectively with
+private _get_mapping function.
+
+Mappings are used by tktoqt file.
+
+Note that this could be heavily extended - TODO.
+Note that this might get changed when problem with step 5) from Implementer
+will be solved - TODO.
+"""
+
 parameters_names_mapping = {
     "all": {
         '-text': 'setText',

@@ -1,3 +1,11 @@
+"""
+This file contains functions which are solving translation
+from Tcl/Tk command additional arguments:
+- translate_parameters_values - Translates values of parameters to PyQt format.
+- translate_parameters_names - Translates names of parameters to PyQt format.
+- translate_parameters_for_class - Translates names of parameters and values
+                                   of parameters to PyQt format for class name.
+"""
 import sys
 
 from .parameters_mapping import (get_parameters_values_mapping,
