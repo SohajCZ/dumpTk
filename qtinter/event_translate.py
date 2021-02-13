@@ -126,6 +126,8 @@ def sequence_parser(sequence):
     if len(sequence_split) == 1:
         if sequence_split[0].isnumeric():
             parsed["Type"] = "Button"
+        elif sequence_split[0] == 'Enter':
+            parsed["Type"] = "Enter"
         else:
             parsed["Type"] = "KeyPress"
 

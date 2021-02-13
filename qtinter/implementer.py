@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
                              QMainWindow, QMenu, QAction, QSpinBox,
                              QSlider, QCheckBox, QRadioButton, QListWidget,
                              QScrollBar)
-from PyQt5.QtGui import QPixmap, QKeyEvent, QMouseEvent
+from PyQt5.QtGui import QPixmap, QKeyEvent, QMouseEvent, QEnterEvent
 from PyQt5.QtCore import QEvent
 
 from .tktoqt import translate_parameters_for_class
@@ -65,6 +65,9 @@ def call_if_binding_holds(bindings, event):
                         int(event.modifiers()) == int(or_modifier):
                     binding[2](event)
                     return
+            if issubclass(type(event), QEvent):
+                if type(event) == QEnterEvent:
+                    binding[2](event)
 
             # TODO: More events ...
 
