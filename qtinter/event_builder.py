@@ -4,7 +4,7 @@ This class serves as translator from Qt event to Tk event.
 
 Since we've created everything using Qt, Qt events are occurring,
 but the original program in Tkinter could use event in its
-functions or methods. There Qt event needs to be translated back
+functions or methods. Therefore Qt event needs to be translated back
 to Tk event.
 
 Tkinter does similar logic with event from Tcl/Tk. When Tkinter binds

@@ -1,7 +1,7 @@
 """
-Class Implementer could be found in this file.
+Class Implementer can be found in this file.
 This class implements most of logic of Qtinter.
-It also inherites from QApplication.
+It also inherits from QApplication.
 
 Main method of Implementer class is method 'call'.
 This method takes argument, originally command for
