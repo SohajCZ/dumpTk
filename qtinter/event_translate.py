@@ -144,8 +144,11 @@ def sequence_parser(sequence):
     if len(sequence_split) == 1:
         if sequence_split[0].isnumeric():
             parsed["Type"] = "Button"
-        elif sequence_split[0] == 'Enter':
+        elif sequence_split[0] == "Enter":
             parsed["Type"] = "Enter"
+        elif sequence_split[0] == "Key": # Means all keys
+            parsed["Type"] = "KeyPress"
+            parsed["Detail"] = ""
         else:
             parsed["Type"] = "KeyPress"
 
@@ -189,6 +192,7 @@ def get_method_for_type(event_type):
     event_type_switch = {
         "Activate": None,
         "Button": "mousePressEvent",
+        "ButtonPress": "mousePressEvent", # Same as Button
         "ButtonRelease": "mouseReleaseEvent",
         "Configure": None,
         "Deactivate": None,
@@ -197,7 +201,8 @@ def get_method_for_type(event_type):
         "Expose": None,
         "FocusIn": "focusInEvent",
         "FocusOut": "focusOutEvent",
-        "KeyPress": "keyPressEvent",
+        "Key": "keyPressEvent",
+        "KeyPress": "keyPressEvent", # Same as Key
         "KeyRelease": "keyReleaseEvent",
         "Leave": "leaveEvent",
         "Map": None,

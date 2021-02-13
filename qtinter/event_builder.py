@@ -100,10 +100,11 @@ class EventBuilder:
         #          (ButtonPress, ButtonRelease, KeyPress, KeyRelease, Motion)
         # y_root - y-position of the mouse on the screen
         #          (ButtonPress, ButtonRelease, KeyPress, KeyRelease, Motion)
-        if type(self.qt_event) in [QMouseEvent, QKeyEvent]:
+        if type(self.qt_event) in [QMouseEvent]:
             self.tk_event.x_root = self.qt_event.screenPos().x()
             self.tk_event.y_root = self.qt_event.screenPos().y()
             # TODO: No translation for Motion
+            # QKeyEvent does not have this
         else:
             self.tk_event.x_root = "??"
             self.tk_event.y_root = "??"

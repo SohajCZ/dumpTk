@@ -48,7 +48,7 @@ def translate_class(key):
 
 
 def call_if_binding_holds(bindings, event):
-    # TODO: Doc - For checking if keys in event holds.
+    """ This method serves as guard which checks if binding holds."""
     for binding in bindings:
         or_modifier = 0
         for modifier in binding[1]:
@@ -56,12 +56,14 @@ def call_if_binding_holds(bindings, event):
 
         if issubclass(type(event), QEvent):
             if type(event) == QKeyEvent:
-                if int(event.key()) == int(binding[0]) and \
+                if (binding[0] == '' or
+                    int(event.key()) == ord(binding[0].upper())) and \
                         int(event.modifiers()) == int(or_modifier):
                     binding[2](event)
                     return
             elif type(event) == QMouseEvent:
-                if int(event.button()) == int(binding[0]) and \
+                if (binding[0] == '' or
+                    int(event.button()) == int(binding[0])) and \
                         int(event.modifiers()) == int(or_modifier):
                     binding[2](event)
                     return
@@ -238,22 +240,28 @@ class Implementer(QApplication):
 
         # If packing insert widget
         if construct_command[0] in ['bind']:
-            if construct_command[1] == 'all':
-                # TODO: widget = self.namer['.']
-                # TODO: Does this makes sense? Since it will catch everything
-                return
+            # We might need to rename from 'all' to '.' (bind_all)
+            name_of_widget = construct_command[1]
+
+            if name_of_widget == 'all':
+                # Map it to main widget. Camouflage it as toplevel.
+                if not self.window:
+                    self.window = QWidget()
+
+                widget = self.window
+                name_of_widget = '.'
             else:
-                widget = self.namer[construct_command[1]]
+                widget = self.namer[name_of_widget]
 
             sequence_parsed = sequence_parser(construct_command[2])
             widget_method = get_method_for_type(sequence_parsed["Type"])
 
             # Prepare bindings, if not yet
-            if not construct_command[1] in self.bindings:
-                self.bindings[construct_command[1]] = {}
+            if name_of_widget not in self.bindings:
+                self.bindings[name_of_widget] = {}
 
-            if widget_method not in self.bindings[construct_command[1]]:
-                self.bindings[construct_command[1]][widget_method] = []
+            if widget_method not in self.bindings[name_of_widget]:
+                self.bindings[name_of_widget][widget_method] = []
 
             modifiers = []
             if sequence_parsed["Mod1"]:
@@ -263,11 +271,11 @@ class Implementer(QApplication):
 
             command = self.commands[construct_command[3][6:].split(' ')[0]]
 
-            self.bindings[construct_command[1]][widget_method].append(
+            self.bindings[name_of_widget][widget_method].append(
                 (sequence_parsed["Detail"], modifiers, command))
 
             setattr(widget, widget_method, lambda event: call_if_binding_holds(
-                self.bindings[construct_command[1]][widget_method], event))
+                self.bindings[name_of_widget][widget_method], event))
 
             return
 

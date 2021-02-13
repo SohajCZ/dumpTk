@@ -23,7 +23,7 @@ def s_clicked(event):
 
 
 def bind_all_clicked(event):
-    print("bind all - alt a clicked")
+    print("bind all -", event.char)
 
 
 frame = Frame()
@@ -34,7 +34,7 @@ label.pack()
 
 label.bind("<1>", mouse_click_1)
 label.bind("<3>", mouse_click_3)
-label.bind_all("<KeyPress-s>", bind_all_clicked)
+label.bind_all("<Key>", bind_all_clicked)
 
 
 
