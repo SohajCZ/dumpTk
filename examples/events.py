@@ -11,11 +11,11 @@ def print_event(event):
 
 
 def mouse_click_1(event):
-    print("mouse clicked - 1")
+    print("mouse clicked -", event.num)
 
 
 def mouse_click_3(event):
-    print("mouse clicked - 3") # right button .. .qt has 2 for that, nice.
+    print("mouse clicked -", event.num)
 
 
 def s_clicked(event):

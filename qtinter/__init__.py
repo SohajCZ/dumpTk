@@ -47,9 +47,8 @@ class QtCallWrapper:
         # or QAction (menu) - so on those values, omit those.
         if type(*args) in [bool, QAction]:
             args = {}
-
-        # Support bound events.
-        if type(args) in SUPPORTED_EVENTS:
+        elif type(*args) in SUPPORTED_EVENTS:
+            # Support bound events.
             eb = EventBuilder(*args)
             args = {eb.get_tk_event()}
 

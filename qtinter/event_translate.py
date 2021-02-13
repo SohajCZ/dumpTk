@@ -88,7 +88,25 @@ def key_translator(qt_key):
     return value
 
 
-# TODO: Mouse translator - right = 3 for Tkinter, 2 for PyQt5
+def mouse_button_translator(mouse_button, from_tk=True):
+    """Translates QtMouseButton to TkMouseButton or other way."""
+
+    mouse_button_switch_from_tk = {
+        1: Qt.LeftButton,
+        2: Qt.MidButton,
+        3: Qt.RightButton,
+    }
+
+    mouse_button_switch_from_qt = {
+        1: 1,
+        2: 3,
+        4: 2,
+    }
+
+    if from_tk:
+        return mouse_button_switch_from_tk[int(mouse_button)]
+    else:
+        return mouse_button_switch_from_qt[int(mouse_button)]
 
 
 # Possibilities:
@@ -130,6 +148,9 @@ def sequence_parser(sequence):
             parsed["Type"] = "Enter"
         else:
             parsed["Type"] = "KeyPress"
+
+    if parsed["Type"] == "Button":
+        parsed["Detail"] = mouse_button_translator(parsed["Detail"])
 
     return parsed
 

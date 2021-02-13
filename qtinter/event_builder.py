@@ -2,6 +2,8 @@ from tkinter import Event
 from PyQt5.QtGui import (QEnterEvent, QInputEvent, QKeyEvent,
                          QMouseEvent, QWheelEvent, QFocusEvent)
 
+from .event_translate import mouse_button_translator
+
 # Not implemented events:
 # QNativeGestureEvent, QTabletEvent, QContextMenuEvent,
 # QHoverEvent, QTouchEvent, ... other not inheriting QInputEvent
@@ -43,7 +45,8 @@ class EventBuilder:
 
         # num - mouse button pressed (ButtonPress, ButtonRelease)
         if type(self.qt_event) == QMouseEvent:
-            self.tk_event.num = self.qt_event.button()
+            self.tk_event.num = mouse_button_translator(self.qt_event.button(),
+                                                        from_tk=False)
         else:
             self.tk_event.num = "??"
 
