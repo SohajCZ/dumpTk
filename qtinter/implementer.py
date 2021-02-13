@@ -1,3 +1,82 @@
+"""
+Class Implementer could be found in this file.
+This class implements most of logic of Qtinter.
+It also inherites from QApplication.
+
+Main method of Implementer class is method 'call'.
+This method takes argument, originally command for
+Tcl/Tk, and parses it in following steps (also comments in code):
+1) Forget all commands which are not helpful for Qt
+2) Command usually contains some additional parameters, first extract those.
+   Note that this calculation could use some refactoring - TODO.
+3) If main command is about binding events, solve those and return.
+   During this, function call_if_binding_holds is used, since
+   Tkinter allows to bind commands to special shortcuts, but
+   Qt has slots on widgets and shortcut is usually checked in this slot.
+4) If main command is about layout, geometry management and such,
+   forward it to function which solves that,
+   which delegates it to Layouter class; and return.
+5) If main commands is about configuring following widgets (ListWidget,
+   ComboBox, Menu and MenuAction), solve it and return.
+   Note that this could be unified with some logic refactoring - TODO.
+6) Construct basic widgets and return. During this, translate_class_dict
+   with translation from Tk object (or Ttk) name to PyQt class is used.
+Note that these steps could be refactored into facade/chain of responsibility,
+or at least divide into more better organized functions.
+
+Other methods of implementer class are:
+- add_to_namer - Little function, which solves problem with menus (see below).
+- create_menu - Function which triggers menu bar to show in application.
+- show - Solves showing right widget as toplevel, which could be problematic
+        when menu is used or main frame is not directly created (see below).
+- call_method - Configures widget method with given parameters - used to
+                apply additional parameters from step 2). Method name
+                and parameters needs to be translated from basic Tcl/Tk
+                command with translate_parameters_for_class function.
+                Note that TODOs in this method should solve special step 5).
+- createcommand - Since this command is already created by caller (TkWrapper),
+                  this method only saves command into Implementers "cache".
+- _add_widget - Adds widget to its master layout.
+- mainloop - Starts PyQt application.
+
+During all this, Implementer builds own "caches":
+- namer - Stores widget under its name used in Tkinter. This is needed to find
+          master widget when creating child widget, when assigning commands
+          and many other.
+- commands - Stores commands created by createcommand method. Used when
+             command should be assigned to widget.
+- layouter - Stores layout under name of widget.
+- masters - Stores master widget under name of widget.
+- bindings - Stores bindings under widget name. These bindings are then
+            used in call_if_binding_holds function.
+
+layouter and master "caches" are used together - each widget, on which is
+any layout management applied, is placed in master widgets layout. If this
+layout does not exists yet, it is created. This functions recursively.
+
+As said, these "caches" has names of widgets as keys to its values,
+because in Tcl/Tk, objects are identified with names.
+
+The other class in this file is Menu.
+This class inherites from QMainWindow toplevel widget,
+which allows application to have menu. In Tkinter,
+Appliaction class has availability to acquire menu, which
+is not available in QApplication. When application had no menu,
+Implementer class either creates own frame/widget or is given own frame,
+which is shown with show method. When application should have menu,
+this default widget is exchanged with this Menu class. It is not
+really menu, it is just toplevel widget, which has availability to
+acquire menu. Menu is created inside class with add_menu method.
+Tkinter sometimes assign label of menu action before the action itself,
+therefore remember_label method is implemented. Since Tkinter menu
+is quite different from PyQt menu, it also needs to be given as needed,
+which is solved when Implementors method add_to_namer is called.
+See also Menu and Implementer method translations in parameters mapping.
+Since Tkinter application can acquire menu, command -menu is translated to
+Implementers create_menu, which in reality just checks flag, which is
+then used to decide if Menu instance should be declared as central widget in
+show method.
+"""
 import sys
 
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
@@ -129,6 +208,9 @@ class Implementer(QApplication):
         self.menu = True
 
     def show(self):
+        """Solves showing right widget as toplevel, which could be problematic
+        when menu is used or main frame is not directly created."""
+
         if not self.window:
             self.window = QWidget()
 
@@ -143,7 +225,11 @@ class Implementer(QApplication):
             self.window.show()
 
     def call_method(self, o, name, params):
-        # TODO: Doc - "o" is object.; params needs to be translated
+        """Configures "o" widgets "name" method with "params".
+        Note that name and params needs to be translated with
+        "translate_parameters_for_class" function. Note that
+        TODOs in this method should solve special step 5) as
+        mentioned at start of this file."""
 
         # TODO: Prepare combinations.
         if '.' in name:
@@ -160,6 +246,8 @@ class Implementer(QApplication):
             pass
 
     def createcommand(self, cbname, bound_method, reassign_name=None):
+        """Since this command is already created by caller (TkWrapper),
+        this method only saves command into Implementers "cache"."""
         # print("Assign command: ", cbname, bound_method, reassign_name)
         if reassign_name:
             self.commands[reassign_name] = bound_method
@@ -167,6 +255,7 @@ class Implementer(QApplication):
             self.commands[cbname] = bound_method
 
     def _add_widget(self, widget_id, kind, other_args):
+        """Adds widget to its master layout"""
         master_id = self.masters[widget_id]
         widget = self.namer[widget_id]
         master_created = False
@@ -186,6 +275,8 @@ class Implementer(QApplication):
     def call(self, *args):
         construct_command = args[0]
 
+        # -------- Begin of step 1 - Omit clutter -----------------------------
+
         if construct_command == 'info':
             # This is stringvar ... already made with my StringVar.
             return
@@ -200,6 +291,8 @@ class Implementer(QApplication):
         if construct_command in ['wm', 'bind']:  # TODO 'WM_DELETE_WINDOW'
             # print(args)
             return
+
+        # -------- Begin of step 2 - Parsing assitional arguments -------------
 
         # Omitting place
 
@@ -238,7 +331,7 @@ class Implementer(QApplication):
                     additional_options[construct_command[i]] = \
                         self.namer[str(construct_command[i+1])]
 
-        # If packing insert widget
+        # -------- Begin of step 3 - bindings ---------------------------------
         if construct_command[0] in ['bind']:
             # We might need to rename from 'all' to '.' (bind_all)
             name_of_widget = construct_command[1]
@@ -279,12 +372,14 @@ class Implementer(QApplication):
 
             return
 
+        # -------- Begin of step 4 - layouts ----------------------------------
         # If packing insert widget
         if construct_command[0] in ['pack', 'grid']:
             self._add_widget(construct_command[2],
                              construct_command[0], additional_options)
             return  # TODO Nicer?
 
+        # -------- Begin of step 5 - "special" widgets ------------------------
         # Add for menu, insert for text, current for combobox
         if construct_command[1] in ['configure', 'add', 'insert', 'current',
                                     'tag', 'entryconfigure']:
@@ -336,6 +431,8 @@ class Implementer(QApplication):
 
             return  # TODO Make it nicer
 
+        # -------- Begin of step 6 - construct basic widgets ------------------
+
         class_name = translate_class(construct_command[0])
 
         # Translate additional options # TODO Done here and later
@@ -370,6 +467,7 @@ class Implementer(QApplication):
         self.add_to_namer(construct_command[1], widget)
 
     def mainloop(self, *args):
+        """Starts PyQt application."""
         import sys
         self.show()
         sys.exit(self.exec_())

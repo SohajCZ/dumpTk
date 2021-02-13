@@ -36,8 +36,6 @@ not easy to get value of variable from there. Therefore
 Qtinter inherits original variable and substitutes it
 for own class, of which value is not stored in Tcl.
 """
-
-
 from tkinter import (Frame, Button, LabelFrame, Label, Entry,  # noqa
                      Radiobutton, Text, Menu, Spinbox, Scale,  # noqa
                      Listbox, Checkbutton, Event)  # noqa
