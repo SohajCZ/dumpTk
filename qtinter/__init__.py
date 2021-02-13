@@ -1,3 +1,43 @@
+"""
+Main Qtinter file.
+
+In following imports, one can find imported classes Tkinter.
+This decides how many classes from Tkinter are supported in Qtinter.
+
+Tkinter is usually imported with one of following:
+- star import - from tkinter import *
+- import with as keyword - import tkinter as tk
+After import, Tk class must be instantiated.
+
+Class Tk here inherits from Tkinter class, which
+means that most of methods stays same, therefore Tkinter
+is used as some kind of preprocessor. To apply custom
+logic, similar to Tkinter, Tk class here uses own TkWrapper
+class to wrap around tk, but in reality TkWrapper here
+wraps own class - Implementer - which implements main logic.
+
+Outcome of all this is that when regular Tkinter call
+methods from regular TkWrapper, it calls custom methods.
+These custom methods are mainly:
+- call - This method originally calls _tkinter module,
+which forwards arguments to Tcl/Tk, which processes them.
+These arguments have given structure for Tcl/Tk,
+therefore are easily parse-able
+in Implementer.
+- createcommand - This method also calls _tkinter module,
+with intention to create command in Tcl/Tk. QtCallWrapper,
+similarly as original CallWrapper from Tkinter, encapsulates
+this command (after decomposition from CallWrapper encapsulation)
+and forwards it to Implementer as well to store this command.
+
+StringVar class here prototypes usage of Tk variables.
+Since Tk variables are originally stored in Tcl, it is
+not easy to get value of variable from there. Therefore
+Qtinter inherits original variable and substitutes it
+for own class, of which value is not stored in Tcl.
+"""
+
+
 from tkinter import (Frame, Button, LabelFrame, Label, Entry,  # noqa
                      Radiobutton, Text, Menu, Spinbox, Scale,  # noqa
                      Listbox, Checkbutton, Event)  # noqa
