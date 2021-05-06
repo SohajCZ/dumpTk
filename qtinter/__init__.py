@@ -42,10 +42,8 @@ from tkinter import (Frame, Button, LabelFrame, Label, Entry,  # noqa
 from tkinter.ttk import (Combobox)  # noqa
 from tkinter import StringVar as TkString
 from tkinter import Tk as BaseTk
-from tkinter import (TOP, RIGHT, BOTTOM, LEFT, RAISED, BOTH,  # noqa
-                     YES, RIDGE, E, W, N, S, NW, NE, SW, SE,  # noqa
-                     END, HORIZONTAL) # noqa
 
+from .constants import * # noqa
 from .implementer import Implementer, QAction
 from .event_builder import EventBuilder, SUPPORTED_EVENTS
 
